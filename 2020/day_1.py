@@ -28,6 +28,7 @@ with open(PROJECT_FOLDER.joinpath(local_input_file), "rb") as f:
     raw_data = f.read().decode("utf-8").splitlines()
     data = sorted(list(map(lambda x: int(x), raw_data)))
 
+# Evaluate half of the number list
 half = len(data) // 2
 h1, h2 = data[:half], data[half:]
 
