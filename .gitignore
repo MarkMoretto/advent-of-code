@@ -1,0 +1,5 @@
+# Local data
+dev-*.*
+.vscode/
+whereami.py
+__pycache__/
