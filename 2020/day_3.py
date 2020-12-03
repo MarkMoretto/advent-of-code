@@ -14,6 +14,7 @@ from config import PROJECT_FOLDER
 
 local_input_file = r"data\day-3-input.txt"
 
+
 # Set stepsize for each direction of travel
 up = 0
 down = 1
@@ -61,6 +62,7 @@ def product(iterable):
         return 1
     return iterable[0] * product(iterable[1:])
 
+
 data = raw_data.splitlines()
 
 # Set and run
@@ -82,9 +84,11 @@ while pos[0] < n_rows:
     v, h = pos[0], pos[1]
     
     # If we run out of columns, add more!
+
     if h > n_cols:
         woods[v:] = [w * 2 for w in woods[v:]]
         n_cols *= 2
+
 
     # If the location has an octothorpe
     #   - update woods grid
@@ -102,7 +106,8 @@ while pos[0] < n_rows:
     pos[1] += h_incr
 
 
-print("\n".join(["".join(w) for w in woods]))
+
+# print("\n".join(["".join(w) for w in woods]))
 
 
 
