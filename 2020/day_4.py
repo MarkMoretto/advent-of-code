@@ -63,27 +63,32 @@ output_msg = []
 # --- Part 1 --- #
 ##################
 
+# Simple regular expression to split IDs and values within a passport entry.
 kwrd_ptrn = r"([\w]+):.+?\s*?"
 p = re.compile(kwrd_ptrn)
 
-valid_count = 0
+# Cumulative validation count
+valid_count_1 = 0
 for pport in pports:
     ids = p.findall(pport)
     diff = fieldset.difference(set(ids))
 
     if len(diff) == 0:
-        valid_count += 1
+        valid_count_1 += 1
 
     elif len(diff) == 1 and "cid" in diff:
-        valid_count += 1
+        valid_count_1 += 1
 
-output_msg.append(f"Valid Passport count for Part 1: {valid_count}")
+output_msg.append(f"Valid Passport count for Part 1: {valid_count_1}")
 
 
 ##################
 # --- Part 2 --- #
 ##################
 
+# Constraint collection
+# Keys are ID values
+# Values are regular expressions for validation.
 constraints = {
     "byr": r"(19[2-9]\d|200[0-2])",
     "iyr": r"(201\d|2020)",
@@ -96,8 +101,9 @@ constraints = {
     }
 
 
+# Cumulative validation count
+valid_count_2 = 0
 
-valid_count = 0
 for pport in pports:
     # Split passports by whitespace, then by colon
     # Unpack to id and value variables.
@@ -134,8 +140,11 @@ for pport in pports:
         elif regex_count == 7 and "cid" in diff:
             valid_count += 1
 
+output_msg.append(f"Valid Passport count for Part 1: {valid_count_1}")
+
 
 if __name__ == "__main__":
-    # Run docstring tests
-    import doctest
-    doctest.testmod()
+    # # Run docstring tests
+    # import doctest
+    # doctest.testmod()
+    print("Results for day 4:\n" + "\n".join(output_msg))
