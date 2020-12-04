@@ -135,12 +135,12 @@ for pport in pports:
         # If regex_count is 8, then passport valid
         # If regex_count is 7 and 'cid' in id list, then passport valid
         if regex_count == 8:
-            valid_count += 1
+            valid_count_2 += 1
             
         elif regex_count == 7 and "cid" in diff:
-            valid_count += 1
+            valid_count_2 += 1
 
-output_msg.append(f"Valid Passport count for Part 1: {valid_count_1}")
+output_msg.append(f"Valid Passport count for Part 2: {valid_count_2}")
 
 
 if __name__ == "__main__":
