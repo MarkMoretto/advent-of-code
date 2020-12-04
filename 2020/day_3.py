@@ -28,7 +28,17 @@ h_incr = (right - left)
 # Import data
 with open(PROJECT_FOLDER.joinpath(local_input_file), "rb") as f:
     raw_data = f.read().decode("utf-8")
-    
+
+
+def data_size(string):
+    """Return memory allocated to iterable,
+    less any garbage collector storage.
+    """
+    ss = string.__sizeof__()
+    kb = ss / (2<<9)
+    mb = ss / (2<<9) / (2<<9)
+    return f"{kb:.4f} KB or {mb:.4f} MB"
+
 
 def softmax(a):
     """Simple softmax function.
@@ -118,209 +128,61 @@ while pos[0] < n_rows:
 # --- Part 2 --- #
 ##################
 
-
-class Course:
-    def __init__(self):
-        self.course: list = []
-        self.__n_rows: int
-        self.__n_cols: int
-
-
-    def generate(self, raw_data: str):
-        if isinstance(raw_data, str):
-            dd = raw_data.splitlines()
-
-            # Split course data into matrix.
-            self.course = [list(i) for i in dd]
-            self.__n_rows = len(self.course)
-            self.__n_cols = len(self.course[0])
-
-    @property
-    def n_rows(self):
-        return self.__n_rows
-    
-    @n_rows.setter
-    def n_rows(self, value):
-        if isinstance(value, int):
-            self.__n_rows = value
-        else:
-            self.__n_rows = 0
-
-    @property
-    def n_cols(self):
-        return self.__n_cols
-    
-    @n_cols.setter
-    def n_cols(self, value):
-        if isinstance(value, int):
-            self.__n_cols = value
-        else:
-            self.__n_cols = 0            
-
-# c = Course()
-# c.generate(raw_data)
-
-class Attempt:
-    def __init__(self, left: int = 0, right: int = 0, up: int = 0, down: int = 0):
-        self.left = left
+class Slope:
+    def __init__(self, right = 1, down = 1):
         self.right = right
-        self.up = up
         self.down = down
-        self.__v_incr: int = (down - up)
-        self.__h_incr: int = (right - left)
-        
-        self.hits: int = 0      # How many trees hit
-        self.pos: list = [0, 0] # Starting coordinates for an attempt.
-    
-    def __repr__(self):
-        return f"<Attempt l: {self.left}, r: {self.right}, u: {self.up}, d:{self.down}>"
-
-    @property
-    def v_incr(self):
-        return self.__v_incr
-    
-    @v_incr.setter
-    def v_incr(self, value):
-        if isinstance(value, int):
-            self.__v_incr = value
-        else:
-            self.__v_incr = 1
-
-    @property
-    def h_incr(self):
-        return (self.right - self.left)
-    
-    @h_incr.setter
-    def h_incr(self, value):
-        if isinstance(value, int):
-            self.__h_incr = value
-        else:
-            self.__h_incr = 1
-            
-        
-            
 
 
-class Attempts(Course):
-    
-    ALL_HITS: list = []
-    
-    def __init__(self, data: str, directions: list):
-        super().__init__()
-        self.data = data
-        self.dirs = directions
-        self.generate(self.data)
-
-    def __repr__(self):
-        return f"<Attempts rows: {self.n_rows}, cols: {self.n_cols}/>"
+paths = [
+        Slope(),            # (1, 1)
+        Slope(right=3,),    # (3, 1)
+        Slope(right=5,),    # (5, 1)
+        Slope(right=7,),    # (7, 1)
+        Slope(down=2,),     # (1, 2)
+        ]
 
 
-    def __run(self, direction):
-        """Run attempt."""
-        
-        #TODO: Fix this section.  Kind of close, but not really.
-        self.generate(self.data)
-        woods = self.course
-        n_rows = self.n_rows
-        n_cols = self.n_cols
-        
-        # Create Attempt instance
-        a = Attempt(right = direction[0], down = direction[1])
-        print(a)
-        r = 0
-        while r < n_rows:
+data_src = raw_data.splitlines()
+n_rows = len(data_src)
+n_cols_src = len(data_src[0])
+row_len = len(data_src[0])
 
-            # Set vert and horiz variables.
-            v, h = a.pos[0], a.pos[1]
-            print(v, h)
-            
-                
-            # If we run out of columns, add more!
-            if h > n_cols:
-                print("Expanding course columns.")
-                for w in n_rows:
-                    woods[w] += woods[w]
-                n_cols = len(woods[0])
+all_hits = []
 
-            if woods[v][h] == "#":
-                a.hits += 1
+for p in paths:
 
-            # Increment coordinate position by vertical and horizontal steps.
-            a.pos[0] += a.v_incr
-            a.pos[1] += a.h_incr
-            r += a.pos[0] # Increment r indexer
+    multiplier = int(((n_rows / n_cols_src) * p.right) + 1)
+
+    data = [x * multiplier for x in data_src]
+
+    n_cols = len(data[0])
+    # print(n_rows, n_cols)
 
 
-        self.ALL_HITS.append(a.hits)
-        
+    hits = 0 # How many trees are hit?
+    pos = [0, 0] # Starting position or coordinates
 
-    def run_all(self):
-        for d in self.dirs:
-            self.__run(d)
-            
-        if len(self.ALL_HITS) > 0:
-            print(f"Trees hit for each run were: {self.ALL_HITS}")
-            print(f"The product of all the hits is: {product(self.ALL_HITS)}")
-        
-        
-
-# fields = [i for i in dir(SkiDirection) if not str(i).startswith("_")]
-    
-
-given = [
-    [1, 1],
-    [3, 1],
-    [5, 1],
-    [7, 1],
-    [1, 2],
-    ]
-
-# attempts = [
-#     Attempt(right = i[0], down = i[1]) for i in given
-#     ]
+    while pos[0] < n_rows:
+        # Set interim vertical and horizontal variables for easier interpretation
+        r, c = pos
+        try:
+            if data[r][c] == "#":
+                # woods[h][w] = "X"
+                hits += 1
+        except IndexError:
+            print(f"error: row {r}, column {c}, pos {pos}")
 
 
-attempts = Attempts(raw_data, given)
+        # Increment coordinate position by vertical and horizontal steps.
+        pos[0] += p.down
+        pos[1] += p.right
 
-attempts.run_all()
+    all_hits.append(hits)
 
+if len(all_hits) > 0:
+    print(f"The product of {all_hits} is: {product(all_hits)}")
 
-hits = 0 # How many trees are hit?
-pos = [0, 0]
-while pos[0] < n_rows:
-    # Set interim vertical and horizontal variables for easier interpretation
-    v, h = pos[0], pos[1]
-    
-    # If we run out of columns, add more!
-    if h > n_cols:
-        woods[v:] = [w * 2 for w in woods[v:]]
-        n_cols *= 2
-
-    if woods[v][h] == "#":
-        hits += 1
-        
-    # Increment coordinate position by vertical and horizontal steps.
-    pos[0] += v_incr
-    pos[1] += h_incr
-
-
-
-
-
-# --- Data for Testing --- #
-raw_data = """
-..##.......
-#...#...#..
-.#....#..#.
-..#.#...#.#
-.#...##..#.
-..#.##.....
-.#.#.#....#
-.#........#
-#.##...#...
-#...##....#
-.#..#...#.#
-""".strip()
 
 
 
