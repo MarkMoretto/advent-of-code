@@ -52,6 +52,8 @@ STRING get_parent_dir() {
 }
 
 
+
+// Read file contents;  Output to reference variable.
 void readfile_test(STRING filepath, STRING &sbuff) {
     STRING s;
     STRING stmp;
