@@ -18,10 +18,12 @@
 #include <string>
 #include <fstream>
 #include "utils.hxx"
+
 // #include <string>
 // //#include <windows.h>
 // #include <dirent.h>
 
+// const char nl = '\n';
 
 using STRING = std::string;
 
@@ -34,37 +36,48 @@ STRING get_cwd() {
     return pwd;
 }
 
-void change_dir_up() {
+// Change directory one level up.
+int change_dir_up() {
     char up1[] = "..";
     char *c_ptr = up1;
 
-    int res;
+    int res = ChDir(c_ptr);
 
-    res = ChDir(c_ptr);
-
-    if (res != 0) std::perror("Error changing directory!");
+    if (res != 0) {
+        std::perror("Error changing directory!");
+        return -1;
+    } else {
+        return 0;
+    }
 }
 
 STRING get_parent_dir() {
-    change_dir_up();
-    STRING tmps = get_cwd();
+    STRING tmps = "";
+    int check_cd = change_dir_up();
+    if (check_cd == 0) {
+        tmps = get_cwd();
+    }
     return tmps;
 }
 
 
 
 // Read file contents;  Output to reference variable.
-void readfile_test(STRING filepath, STRING &sbuff) {
-    STRING s;
+void readfile_test(STRING filepath, STRING &s) {
     STRING stmp;
     std::ifstream ifs;
     ifs.open(filepath);
-    while (std::getline(ifs, stmp)) {
-        sbuff += stmp;
-        sbuff += nl;
+    if (ifs.fail()) {
+        std::cout << "Error opening file: " << filepath << std::endl;
+        ifs.clear();
+    } else {
+        while (std::getline(ifs, stmp)) {
+            s += stmp;
+            s += nl;
+        }
     }
+    s.pop_back(); // Remove last newline char from string.
     ifs.close();
-    ifs.clear();
 }
 
 
