@@ -3,3 +3,6 @@ dev-*.*
 .vscode/
 whereami.py
 __pycache__/
+
+# extensions
+*.exe
