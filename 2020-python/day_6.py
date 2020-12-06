@@ -39,6 +39,8 @@ print(f"The number of `yes` responses is: {yeses}")
 # --- Part 2 --- #
 ##################
 
+from os import linesep
+
 def counter(iterable: str):
     """Return dictionary of frequency counts for each letter in an array of letters.
 
@@ -76,6 +78,7 @@ def add_nl(string):
         ...
     AttributeError: 'int' object has no attribute 'endswith'
     """
+    string = string.replace(linesep, "\n")
     if not string.endswith("\n"):
         string += "\n"
     return string
