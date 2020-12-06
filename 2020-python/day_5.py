@@ -9,14 +9,17 @@ Contributor(s):
 """
 
 from array import array
-from config import PROJECT_FOLDER
+from utils import current_file, day_number, read_data
 
+# Current file filepath
+thisfile = current_file()
 
-local_input_file = r"data\day-5-input.txt"
+# AOC day number
+DAY_NO: int = day_number(thisfile.stem)
 
-# Import data
-with open(PROJECT_FOLDER.joinpath(local_input_file), "rb") as f:
-    raw_data = f.read().splitlines()
+# Import data and split by newline character.
+raw_data = read_data(f"day-{DAY_NO}-input.txt")
+data = raw_data.splitlines()
 
 
 
@@ -84,7 +87,7 @@ def get_row_col(location_code):
 ##################
 
 max_id = -1.
-for location in raw_data:
+for location in data:
     seat_id = get_seat_id(*get_row_col(location))
     if seat_id > max_id: max_id = seat_id
 

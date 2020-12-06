@@ -9,10 +9,18 @@ Contributor(s):
 """
 
 import re
-from config import PROJECT_FOLDER
+from utils import current_file, day_number, read_data
 
-local_input_file = r"data\day-4-input.txt"
+# Current file filepath
+thisfile = current_file()
 
+# AOC day number
+DAY_NO: int = day_number(thisfile.stem)
+
+# Import data
+raw_data = read_data(f"day-{DAY_NO}-input.txt")
+
+# Static field variabls
 fields = [
     "byr", # (Birth Year)
     "iyr", # (Issue Year)
@@ -24,31 +32,10 @@ fields = [
     "cid", # (Country ID)
     ]
 
-
+# Create set of field names for evaluation purposes later on.
 fieldset = set(fields)
 
 
-DEBUG = True
-if DEBUG:
-    raw_data = """
-    ecl:gry pid:860033327 eyr:2020 hcl:#fffffd
-    byr:1937 iyr:2017 cid:147 hgt:183cm
-    
-    iyr:2013 ecl:amb cid:350 eyr:2023 pid:028048884
-    hcl:#cfa07d byr:1929
-    
-    hcl:#ae17e1 iyr:2013
-    eyr:2024
-    ecl:brn pid:760753108 byr:1931
-    hgt:179cm
-    
-    hcl:#cfa07d eyr:2025 pid:166559648
-    iyr:2011 ecl:brn hgt:59in
-    """.strip()
-else:
-    # Import data
-    with open(PROJECT_FOLDER.joinpath(local_input_file), "rb") as f:
-        raw_data = f.read().decode("utf-8")
 
 # Clear up passport strngs
 lines = [line.strip() for line in raw_data.splitlines()]

@@ -8,11 +8,17 @@ Contributor(s):
     Mark M.
 """
 
+import os.path
+from utils import current_file, day_number, read_data
 
-from config import PROJECT_FOLDER
+# Current file filepath
+thisfile = current_file()
 
+# AOC day number
+DAY_NO: int = day_number(thisfile.stem)
 
-local_input_file = r"data\day-3-input.txt"
+# Import data
+raw_data = read_data(f"day-{DAY_NO}-input.txt")
 
 
 # Set stepsize for each direction of travel
@@ -25,9 +31,6 @@ right = 1 # 3
 v_incr = (down - up)
 h_incr = (right - left)
 
-# Import data
-with open(PROJECT_FOLDER.joinpath(local_input_file), "rb") as f:
-    raw_data = f.read().decode("utf-8")
 
 
 def data_size(string):

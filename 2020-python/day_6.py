@@ -10,14 +10,17 @@ Contributor(s):
 """
 
 
-from config import PROJECT_FOLDER
+from utils import current_file, day_number, read_data
 
+# Current file filepath
+thisfile = current_file()
 
-local_input_file = r"data\day-6-input.txt"
+# AOC day number
+DAY_NO: int = day_number(thisfile.stem)
 
 # Import data
-with open(PROJECT_FOLDER.joinpath(local_input_file), "rb") as f:
-    raw_data = f.read().decode("utf-8")
+raw_data = read_data(f"day-{DAY_NO}-input.txt")
+
 
 ##################
 # --- Part 1 --- #

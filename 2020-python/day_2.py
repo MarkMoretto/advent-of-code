@@ -9,14 +9,17 @@ Contributor(s):
 """
 
 import re
-from config import PROJECT_FOLDER
+from utils import current_file, day_number, read_data
 
+# Current file filepath
+thisfile = current_file()
 
-local_input_file = r"data\day-2-input.txt"
+# AOC day number
+DAY_NO: int = day_number(thisfile.stem)
 
-with open(PROJECT_FOLDER.joinpath(local_input_file), "rb") as f:
-    data = f.read().decode("utf-8").splitlines()
-
+# Import data and split each line in the data file.
+raw_data = read_data(f"day-{DAY_NO}-input.txt")
+data = raw_data.splitlines()
 
 
 def eval_pw_count(pw, letter, low_high_ct):
