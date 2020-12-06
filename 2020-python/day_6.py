@@ -13,7 +13,7 @@ Contributor(s):
 from utils import current_file, day_number, read_data
 
 # Current file filepath
-thisfile = current_file()
+thisfile = current_file(__file__)
 
 # AOC day number
 DAY_NO: int = day_number(thisfile.stem)
@@ -48,7 +48,7 @@ def counter(iterable: str):
     {'a': 1, 'b': 1, 'c': 1}
     >>> counter("aabbb")
     {'a': 2, 'b': 3}
-    >>>
+    >>> counter(1234)
     Traceback (most recent call last):
         ...
     TypeError: 'int' object is not iterable
@@ -66,7 +66,7 @@ def add_nl(string):
     """Function to add newline character to end of string for processing purposes.
 
     >>> add_nl("aaa")
-    'aaa\n'
+    'aaa\\n'
     >>> add_nl(aaa)
     Traceback (most recent call last):
         ...
@@ -123,6 +123,8 @@ for group in groups:
         # group count of 1.
         total += len(set(group))
 
+
+print(f"The number of all common nswers within groups is: {total}")
 
 
 if __name__ == "__main__":

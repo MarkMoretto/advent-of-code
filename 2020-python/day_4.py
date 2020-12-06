@@ -12,7 +12,7 @@ import re
 from utils import current_file, day_number, read_data
 
 # Current file filepath
-thisfile = current_file()
+thisfile = current_file(__file__)
 
 # AOC day number
 DAY_NO: int = day_number(thisfile.stem)

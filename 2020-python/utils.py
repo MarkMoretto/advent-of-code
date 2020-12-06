@@ -6,11 +6,13 @@ from pathlib import Path
 from config import DATA_FOLDER
 
 
-def read_data(filename: str, aoc_year: int = 2020):
+def read_data(filename: str, aoc_year: int = 2020, return_bytes: bool = False):
     """Function to read data file based on filename and AoC competition year."""
     subpath = os.path.join(str(aoc_year), filename)
     with open(DATA_FOLDER.joinpath(subpath), "rb") as f:
-        data = f.read().decode("utf-8")
+        data = f.read()
+        if not return_bytes:
+            data = data.decode("utf-8")
     return data
 
 

@@ -12,13 +12,13 @@ from array import array
 from utils import current_file, day_number, read_data
 
 # Current file filepath
-thisfile = current_file()
+thisfile = current_file(__file__)
 
 # AOC day number
 DAY_NO: int = day_number(thisfile.stem)
 
 # Import data and split by newline character.
-raw_data = read_data(f"day-{DAY_NO}-input.txt")
+raw_data = read_data(f"day-{DAY_NO}-input.txt", return_bytes = True)
 data = raw_data.splitlines()
 
 
@@ -99,7 +99,7 @@ print(f"The maximum seat ID is: {seat_id}")
 ##################
 
 all_data = dict(row=[], col=[], seat_id=[])
-for location in raw_data:
+for location in data:
     r_, c_ = get_row_col(location)
     all_data["row"].append(r_)
     all_data["col"].append(c_)
