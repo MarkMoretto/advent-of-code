@@ -12,7 +12,12 @@ Contributor(s):
 import re
 from utils import current_file, day_number, read_data
 
-DEBUG: bool = True
+# If testing, set DEBUG to True for a smaller data set.
+DEBUG: bool = False
+
+# The bag color for evaluation.
+TARGET_BAG: str = "shiny gold"
+
 
 # Import data
 if DEBUG:
@@ -35,21 +40,30 @@ else:
 
     raw_data = read_data(f"day-{DAY_NO}-input.txt")
 
-
+# Split data into lines for further processing.  Skip any missing or blank lines.
 data = [i.strip() for i in raw_data.split("\n") if len(i.strip()) > 0]
 
+
 def bag_qty_re(string):
+    """Function to find bag and quantity data within string.
+
+    Returns:
+        bag: str - The color of a bag.
+        quantity: int - The quantity of bags required.
+    """
     s = re.findall(r"([\d]+)\s([\w\s]+)", string)
 
     quantity = s[0][0]
     bag = s[0][1]
 
+    # return bag, int(quantity)
     return bag, int(quantity)
 
 
-##################
-# --- Part 1 --- #
-##################
+
+####################################
+######### --- Part 1 --- ###########
+####################################
 
 bags = {}
 for line in data:
@@ -80,12 +94,15 @@ for line in data:
             bags[bag].append(bag_name)
 
 
-target = "shiny gold"
 
 
+# Overly complicated method of identifying required bags for
+# a given target color.
+# Relies heavily on set() functions and could be improved if required
+# on future AoC challenges.
 targets = set()
 for k in bags:
-    if target in bags[k]:
+    if TARGET_BAG in bags[k]:
         targets.add(k)
     if len(targets) > 0:
         for i in bags:
@@ -94,29 +111,14 @@ for k in bags:
                 targets.add(i)
 
 total = len(targets)
-print(f"The number of bags that eventually can hold {target} is: {total}")
+print(f"The number of bags that eventually can hold {TARGET_BAG} is: {total}")
 
 
-##################
-# --- Part 2 --- #
-##################
 
-# raw_data = """shiny gold bags contain 2 dark red bags.
-# dark red bags contain 2 dark orange bags.
-# dark orange bags contain 2 dark yellow bags.
-# dark yellow bags contain 2 dark green bags.
-# dark green bags contain 2 dark blue bags.
-# dark blue bags contain 2 dark violet bags.
-# dark violet bags contain no other bags.
-# """
-# data = [i.strip() for i in raw_data.split("\n") if len(i.strip()) > 0]
 
-def prod(iterable):
-    """Product of values in array."""
-    if len(iterable) == 0:
-        return 1
-    else:
-        return iterable[0] * prod(iterable[1:])
+####################################
+######### --- Part 2 --- ###########
+####################################
 
 
 bags = {}
@@ -148,196 +150,32 @@ for line in data:
             bags[bag][bag_name] = qty
 
 
-bag_graph = {k:[] if list(bags[k].keys()) == ["no other"] else list(bags[k].keys()) for k in bags}
+
 
 target = "shiny gold"
 
-targets = [target]
 
-components = []
-for k1, v1 in bags.items():
-    if k1 in targets:
-        components.append([[k] * v for k, v in v1.items()])
-        targets = list(v1.keys())
-
-    for k2, v2 in v1.items():
-        if k2 == k1:
-            print(k1, v1, k2, v2)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def dfs(graph, source,path = []):
-    if source not in path:
-        path.append(source)
-        if source not in graph:
-            # leaf node, backtrack
-            return path
-        for neighbor in graph[source]:
-            path = dfs(graph, neighbor, path)
-    
-    return path
-
-
-def dfs_traversal(graph, start, visited, path):
-    if start in visited:
-        return visited, path
-    visited.append(start)
-    path.append(start)
-    for n in graph[start]:
-        visited, path = dfs_traversal(graph, n, visited, path)
-        # if not n == "no other":
-        #     visited, path = dfs_traversal(graph, n, visited, path)
-    return visited, path
-
-def conn_components(graph: dict):
-    visited = []
-    connected_components = []
-    for n in graph:
-        if not n in visited:
-            tmp = []
-            visited, tmp = dfs_traversal(graph, n, visited, tmp)
-            connected_components.append(tmp)
-    return connected_components
-
-def conn_components(graph: dict):
-    """This function takes graph as a parameter and then returns the list of 
-    connected components
+def bag_eval(target=None):
+    """Recursive function to walk bags, match colors, and increment total
+    bags required for a given color.
     """
+    tot = 1
+    if target == "no other":
+        return tot
+    else:
+        tmp = bags[target]
+        if not tmp:
+            return tot
 
-    # graph_size = len(graph)
-    # visited = graph_size * [False]
-    # components_list = []
+        for color, num in tmp.items():
+            tot += num * bag_eval(color)
 
-    # for i in range(graph_size):
-    #     if not visited[i]:
-    #         i_connected = dfs(graph, i, visited)
-    #         components_list.append(i_connected)
-
-    # return components_list
-    graph_size = len(graph)
-    components_list = []
-    visited = []
-    for comp in graph:
-        if not comp in visited:
-            i_connected = dfs(graph, comp, visited)
-            components_list.append(i_connected)
-    return components_list
-
-
-conn_components(bag_graph)
+        return tot
 
 
 
-
-# targets = set([target])
-# kvs = list(zip(bags[target].keys(), bags[target].values()))
-# total_bags = list(bags[target].values())
-
-
-# targets = [target]
-# for k1, v1 in bags.items():
-#     if k1 == target:
-
-#     for k2, v2 in v1.items():
-#         if k2 == k1:
-#             print(k1, v1, k2, v2)
-
-
-# for k in bags:
-#     tmp = targets.intersection(set(bags[k].keys()))
-#     if len(tmp) > 0:
-#         targets.add(k)
-#         total_bags.append(list(bags[k].values()))
-
-
-
-# matches = []
-# for ki, vi in bags.items():
-#     if target in vi:
-#         if not vi in matches:
-#             matches.append(ki)
-
-#         for ko, vo in bags.items():
-#             if ki in vo:
-#                 total += 1
-
-#     subitems1 = list(v1.keys())
-#     print(subitems1)
-#     if target in subitems1:
-#         total += 1
-#         target2 =
-#         for k2, v2 in bags.items():
-#             subitems2 = list(v2.keys())
-#             if k1 in subitems2:
-#                 total += 1
-
-#     for k2, v2 in v1.items():
-#         if target == k2:
-#             print(k1, k2)
-#             total += 1
-#             for k3, v3 in bags.items():
-#                 for k4, v4 in v3.items():
-#                     if k1 == k4:
-#                         print(k1, k4)
-#                         total += 1
-
-
-
-
-
-# ### ORIGINAL
-# bags = {}
-# for line in data:
-#     bag, requirements = line.split("contain")
-#     # Clean up main bag, set as key value
-#     bag = re.sub(r"(\s*bags?\s*)", "", bag)
-
-#     # Set bag name as key
-#     # Set dictionary as type (this will hold all requirements for the bag).
-#     bags[bag] = {}
-
-#     # Check for delimiter in requirements
-#     if "," in requirements:
-#         # Split by delimiter
-#         reqs = re.split(r",\s*", requirements)
-
-#         # Iterate new list of split values
-#         for r in reqs:
-
-#             # Clean up string by removing unnecessary words and non-word characters
-#             r = re.sub(r"\s*bags?.?", "", r.strip())
-
-#             # Use function to extract bag name and quantity
-#             bag_name, qty = bag_qty_re(r)
-
-#             # Set key and value of subdictionary to bag_name and quantity.
-#             bags[bag][bag_name] = qty
-#     else:
-#         # Otherwise, clean up unnecessary words and non-word characters.
-#         r = re.sub(r"\s*bags?.?", "", requirements.strip())
-
-#         # Check if result is `no other,` which won't require any additional bags.
-#         if r == "no other":
-#             bags[bag][r] = 0
-
-#         # Otherwise, get the bag name and quantity
-#         # then set new key and value for sub-dictionary.
-#         else:
-#             bag_name, qty = bag_qty_re(r)
-#             bags[bag][bag_name] = qty
-
-
+result = bag_eval(TARGET_BAG) - 1
+print(f"The number of bags required if taking a {target} bag is: {result}")
 
 
 
