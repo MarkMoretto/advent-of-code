@@ -1,16 +1,22 @@
-<div style="text-align:center;">
-    <h1>Repo for Advent of Code challenge</h1>
+<div>
+    <div style="text-align:center;margin-bottom:15px;">
+        <h1>Repo for Advent of Code challenge</h1>
+    </div>
+    <div style="text-align:center;">
+        <p><a href="https://adventofcode.com" target="_blank">AoC Homepage</a></p>
+    </div>
 </div>
 
-<div style="text-align:center;">
-<a href="https://adventofcode.com" target="_blank">AoC Homepage</a>
-</div>
 
-### Folders:
+## Folders:
 
-- [Python for 2020](2020-python)
-- [C++ for 2020](2020-cpp)
+* [Python Solutions (2020)](2020-python)
+* [C++ Solutions (2020)](2020-cpp)
+
+&nbsp;
+&nbsp;
+&nbsp;
 
 ### Data:
 
-- [2020 Data Sets](data/2020)
+* [Data Sets (2020)](data/2020)
