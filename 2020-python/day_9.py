@@ -10,26 +10,35 @@ Contributor(s):
 """
 
 import re
+import itertools as ittr
 from utils import current_file, day_number, get_lines, read_data
 
 # If testing, set DEBUG to True for a smaller data set.
-DEBUG: bool = False
-
-# The bag color for evaluation.
-TARGET_BAG: str = "shiny gold"
+DEBUG: bool = True
 
 
 # Import data
 if DEBUG:
-    raw_data = """light red bags contain 1 bright white bag, 2 muted yellow bags.
-    dark orange bags contain 3 bright white bags, 4 muted yellow bags.
-    bright white bags contain 1 shiny gold bag.
-    muted yellow bags contain 2 shiny gold bags, 9 faded blue bags.
-    shiny gold bags contain 1 dark olive bag, 2 vibrant plum bags.
-    dark olive bags contain 3 faded blue bags, 4 dotted black bags.
-    vibrant plum bags contain 5 faded blue bags, 6 dotted black bags.
-    faded blue bags contain no other bags.
-    dotted black bags contain no other bags.
+    raw_data = """35
+20
+15
+25
+47
+40
+62
+55
+65
+95
+102
+117
+150
+182
+127
+219
+299
+277
+309
+576
     """
 else:
     # Current file filepath
@@ -41,6 +50,94 @@ else:
     raw_data = read_data(f"day-{DAY_NO}-input.txt")
 
 # Split data into lines for further processing.  Skip any missing or blank lines.
-data = [i.strip() for i in raw_data.split("\n") if len(i.strip()) > 0]
+data = list(map(int, get_lines(raw_data)))
 
+
+####################################
+######### --- Part 1 --- ###########
+####################################
+
+# Variable (will appear in part 2, too) that determines whether process was a success.
+match_found: bool = False
+
+# Preamble, or Window, of lagging values to consider when looking for a sum that
+# equals the current value.
+preamble = 25
+
+# Collection to hold results.
+res = {}
+
+# Index variable.
+# Will start at preamble value and subtract the preamble to keep the window rolling.
+i = preamble
+
+# Run function until just under the number of data values (since index starts at zero.)
+while i < len(data):
+    # Set current target value.
+    target = data[i]
+
+    # Set determinant to False.
+    match_found = False
+
+    # Iterate over lagging range
+    # Offset to help ensure indices don't cross.
+    for m in range(i - preamble, i):
+        for n in range(m+1, i):
+            # If sum of value equals target, update determinant.
+            if data[m] + data[n] == target:
+                match_found = True
+                break
+
+    # Evaluate determinant and set result accordingly.
+    if match_found:
+        res[target] = "valid"
+    else:
+        res[target] = "invalid"
+
+    # Increment indicer.
+    i += 1
+
+# Get all invalid results and print output.
+invalids = [k for k, v  in res.items() if v == "invalid"]
+invalid = "\n".join(invalids)
+
+print(f"The invalid number(s) for part 1 is/are: {invalid}")
+
+
+####################################
+######### --- Part 2 --- ###########
+####################################
+
+# From part 1, our expected result was singular.
+# This could easily be updated to accomodate multiple invalid results.
+invalid: int = 177777905
+
+
+# Cut down total number of values to consider.
+# Could start by a higher denominator (e.g. - 4 vs. 2), but our list of values isn't
+# too large, so this works for now.
+ddata: list = [i for i in data if i < (invalid//2)]
+
+
+# Create static variable for data length
+ddata_len: int = len(ddata)
+
+# Similar action to part 1, except there is no window and we are just looking for
+# consecutive values in the data set that add up to our invalid value.
+match_found = False
+while not match_found:
+    for m in range(ddata_len):
+        for n in range(m, ddata_len):
+            tmp = ddata[m:n+1]
+            # Once invalid value is found, get minimum and maximum values from range
+            # and break iteration.
+            if sum(tmp) == invalid:
+                min_, max_ = min(tmp), max(tmp)
+                match_found = True
+                break
+
+# Print to standard output if match found.
+if match_found:
+    result = sum([min_, max_])
+    print(f"The sum of min and max values for a range that equals {invalid:,} is: {result}")
 
