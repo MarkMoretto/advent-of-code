@@ -1,6 +1,14 @@
 
+__all__ = [
+    "read_data",
+    "get_lines",
+    "current_file",
+    "day_number",
+]
+
 import re
 import os.path
+from os import linesep
 from pathlib import Path
 
 from config import DATA_FOLDER
@@ -15,6 +23,11 @@ def read_data(filename: str, aoc_year: int = 2020, return_bytes: bool = False):
             data = data.decode("utf-8")
     return data
 
+
+def get_lines(string: str, newline: str = "\n"):
+    """Simple function to parse text document and split sections by newline."""
+    string = string.replace(linesep, newline)
+    return [i.strip() for i in string.split(newline) if len(i.strip()) > 0]
 
 
 def current_file(specification):
