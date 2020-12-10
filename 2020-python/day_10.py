@@ -115,12 +115,31 @@ print(f"Part 1\n\tOnes: {ones}\n\tThrees: {threes}\n\tOnes * Threes: {ones * thr
 diffs = (1, 2, 3)
 p_len = len(picks)
 lendict = {}
-for i in range(1, p_len):
-    curr, nxt = picks[i] - picks[i-1]
+for i in range(p_len-1):
+    curr = picks[i]
+    lendict[curr] = []
+    j = i + 1
+    nxt = picks[j]
     tmp = nxt - curr
+    while tmp < 4:
+        lendict[curr]
+        j += 1
+        nxt = picks[j]
+        tmp = nxt - curr
+
+
+    curr, nxt = picks[i-1], picks[i]
+    diff = nxt - curr
+    if not diff in lendict:
+        lendict[diff] = 1
+    else:
+        lendict[diff] += 1
 
 for i, j in ittr.combinations(range(p_len + 1), 2):
     print(picks[i:j])
+
+for i in ittr.combinations(picks, r=2):
+    print(i)
 
 for i in range(p_len):
     for j in range(p_len):
