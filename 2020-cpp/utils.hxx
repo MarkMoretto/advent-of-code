@@ -9,60 +9,34 @@
 #include <string>
 
 
+using STRING = std::string;
+
 using uint = std::uint_fast64_t;
 using ivec = std::vector<uint>;
-using svec = std::vector<std::string>;
+using svec = std::vector<STRING>;
 
-const char nl = '\n';
+const char* nl = "\n";
 
 const uint zero = 0;
 const uint uone = 1;
 const uint utwo = 2;
 
 
-// Print out all lines
-template <typename VecType>
-void print_vec(VecType &v) {
-    for (auto &el : v) {
-        std::cout << el << std::endl;
-    }
-}
+STRING PartialPath;
+STRING ParentDir;
+STRING FilePath = ParentDir + R"(\)" + PartialPath;
 
-void decompose(uint n, ivec &v) {
-    // Prime decomposition of a number.
-    uint i = 2;
+// Content read intake
+STRING contents;
 
-    // In addition we define f(1)=1.
-    while (n != 1) {
-        while (n % i == 0) {
-            // v.push_back(i);
-            v.push_back(utwo);
-            n /= i;
-        }
-        ++i;
-    }
-}
+void decompose(uint n, ivec &v);
 
+void explode(STRING s, const char * delim, svec &sout);
 
-void product(uint &n, ivec *v) {
-    n = 1;
-    for (uint &i : *v) {
-        n *= i;
-    }  
-}
+// Create filename by date of AoC.
+STRING filename_by_day(const char *);
 
-
-// Split string by delimiter
-void explode(std::string s, const char * delim, svec &sout) {
-    std::size_t last = 0;
-    std::size_t next = 0;
-    while ((next = s.find(delim, last)) != std::string::npos) {
-        sout.push_back(s.substr(last, next - last));
-        last = next + 1;
-    }
-    sout.push_back(s.substr(last));
-}
-
-
+// Create filepath from parent and subpath.
+void set_filepath(const STRING& parent, const STRING& child, STRING& out);
 
 #endif
