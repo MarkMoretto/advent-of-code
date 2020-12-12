@@ -57,6 +57,30 @@ n_rows, n_cols = len(data), len(data[0])
 grid = [list(i) for i in data]
 gridsize = n_rows * n_cols
 
+
+# Adjacency coordinates
+adjacency = [[i, j] for i in (-1,0,1) for j in (-1,0,1) if not (i == j == 0)]
+
+
+def out_of_bounds(coord, direction):
+    res = not ((0 <= (coord[0] + direction[0]) < n_rows) and (0 <= (coord[1] + direction[1]) < n_cols))
+    return res
+
+
+
+# Adjacency cell function
+def adjacent_cells(coords):
+    x_coord, y_coord = coords
+    for xx, yy in adjacency:
+        if 0 <= (x_coord + xx) < n_rows and 0 <= (y_coord + yy) < n_cols:
+            yield [x_coord + xx, y_coord + yy]
+
+
+
+def tot_occupied(iterable):
+    """Count number of occupied seats (#) in a grid."""
+    return gridsize - len(re.sub(r"#", "", "".join([x for y in iterable for x in y])))
+
 ####################################
 ######### --- Part 1 --- ###########
 ####################################
@@ -73,14 +97,6 @@ The following rules are applied to every seat simultaneously:
 Floor (.) never changes; seats don't move, and nobody sits on the floor.
 """
 
-adjacency = [(i,j) for i in (-1,0,1) for j in (-1,0,1) if not (i == j == 0)]
-
-def adjacent_cells(coords):
-    x_coord = coords[0]
-    y_coord = coords[1]
-    for xx, yy in adjacency:
-        if 0 <= (x_coord + xx) < n_rows and 0 <= (y_coord + yy) < n_cols:
-            yield [x_coord + xx, y_coord + yy]
 
 grid = [list(i) for i in data]
 grid_new = deepcopy(grid)
@@ -112,17 +128,67 @@ while True:
 
 
 
-
-
-
-
-
-
-
-
 ####################################
 ######### --- Part 2 --- ###########
 ####################################
+
+
+def walk_n_count(base_coord, target = "#"):
+    """Function to walk each of eight directions and stop when a seat is met.
+
+    If the seat is occupied, increment a counter.
+
+    Return counter results when all possible directions exhausted for a given coordinate.
+    """
+    counter = 0
+    for coord in adjacency:
+        curr_coord = deepcopy(base_coord)
+        while True:
+            if out_of_bounds(curr_coord, coord):
+                break
+            curr_coord[0] += coord[0]
+            curr_coord[1] += coord[1]
+            xx, yy = curr_coord
+
+            if grid[xx][yy] == target:
+                counter += 1
+                break
+            elif grid[xx][yy] == "L":
+                break
+
+    return counter
+
+
+grid = [list(i) for i in data]
+grid_new = deepcopy(grid)
+counts = [0]
+while True:
+    if len(counts) > 1 and counts[-1] == counts[-2]:
+        break
+    else:
+
+        for r1 in range(n_rows):
+            for c1 in range(n_cols):
+                base_coord = [r1, c1]
+                occ_cnt = 0
+
+                occ_cnt = walk_n_count(base_coord)
+
+                if grid[r1][c1] == "L":
+                    if occ_cnt == 0:
+                        grid_new[r1][c1] = "#"
+                if grid[r1][c1] == "#":
+                    if occ_cnt > 4:
+                        grid_new[r1][c1] = "L"
+
+    n_occupied = tot_occupied(grid_new)
+    counts.append(n_occupied)
+    grid = deepcopy(grid_new)
+    # print(grid)
+
+
+
+
 
 
 
