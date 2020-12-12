@@ -113,6 +113,11 @@ pcmd = re.compile(r"\d+",)
 pnum = re.compile(r"\D+",)
 
 
+
+####################################
+######### --- Part 1 --- ###########
+####################################
+
 facing = "E"
 facing_deg = get_deg(facing)
 position = [0, 0]
