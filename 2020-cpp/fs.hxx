@@ -20,7 +20,6 @@
 #include "utils.hxx"
 
 
-
 STRING get_cwd();
 
 int change_dir_up();
@@ -31,5 +30,7 @@ STRING get_parent_dir();
 
 void readfile_test(STRING, STRING&);
 
+// Create filepath from parent and child.
+STRING create_filepath(const STRING&, const STRING&);
 
 #endif

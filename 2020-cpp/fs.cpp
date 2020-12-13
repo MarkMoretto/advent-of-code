@@ -56,3 +56,9 @@ void readfile_test(STRING filepath, STRING &s) {
     s.pop_back(); // Remove last newline char from string.
     ifs.close();
 }
+
+
+STRING create_filepath(STRING& parent, STRING& child) {
+    STRING tmps = parent + R"(\)" + child;
+    return tmps;
+}

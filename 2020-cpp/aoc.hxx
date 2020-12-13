@@ -11,10 +11,10 @@ const char* daynum;
 
 STRING PartialPath = filename_by_day(daynum);
 STRING ParentDir = get_parent_dir();
-STRING FilePath = ParentDir + R"(\)" + PartialPath;
+STRING FilePath = create_filepath(ParentDir, PartialPath);
 STRING contents;
 
-
+using cout = std::cout;
 
 
 
