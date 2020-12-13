@@ -46,14 +46,10 @@ except ValueError:
 finally:
     data = get_lines(raw_data)
 
-# try:
-#     data2 = list(map(int, get_lines(raw_data2)))
-# except ValueError:
-#     pass
-# finally:
-#     data2 = get_lines(raw_data2)
 
 
+
+# --- Functions --- #
 
 def deg_to_cardinal(d):
     dirs = ["E", "ESE", "SE", "SSE",
@@ -65,9 +61,6 @@ def deg_to_cardinal(d):
     dir_len = len(dirs)
     idx = round(d / (360. / dir_len))
     return dirs[idx % dir_len]
-
-# coords = [(i, deg_to_cardinal(i)) for i in range(0, 361, 90)]
-coords = {i:deg_to_cardinal(i) for i in range(0, 361, 90)}
 
 
 def get_deg(direction):
@@ -86,9 +79,7 @@ def new_dir(current_deg, command, rotation_deg):
         tmp = (current_deg + rotation_deg) % 360
 
     radians_ = (tmp * math.pi) / 180.
-
     return int(radians_ * (180 / math.pi))
-
 
 
 def coord_dir(degrees):
@@ -108,7 +99,15 @@ def coord_dir(degrees):
     return (int(xx), int(yy))
 
 
-# Regex, compiled.
+def manhattan(coordinates, origin=(0,0)):
+    """Manhattan distance calculaton function."""
+    return abs(origin[0]-coordinates[0])+abs(origin[1]-coordinates[1])
+
+# Create coordinate dictonary
+coords = {i:deg_to_cardinal(i) for i in range(0, 361, 90)}
+
+
+# Regex to separate characters and numbers, compiled.
 pcmd = re.compile(r"\d+",)
 pnum = re.compile(r"\D+",)
 
@@ -158,9 +157,79 @@ print(f"Part 1: The final Manhattan distance is: {result}")
 
 
 
+####################################
+######### --- Part 2 --- ###########
+####################################
+
+def relative_coords(base_coords, rela_coords):
+    xx = base_coords[0] + rela_coords[0]
+    yy = base_coords[1] + rela_coords[1]
+    return [xx, yy]
+
+def rotate_wp(base_coords, waypoint, angle):
+    """
+    Rotate waypoint counterclockwise around base coordinates.
+
+    Parameter `angle` should be given in radians, so pass math.radians(<deg>)
+                or calculate by: (degrees * PI) / 180.
+    """
+    bx, by = base_coords
+    wpx, wpy = waypoint
+
+    sin_ = math.sin(angle)
+    cos_ = math.cos(angle)
+    qx = round(bx + cos_ * (wpx - bx) - sin_ * (wpy - by), 0)
+    qy = round(by + sin_ * (wpx - bx) + cos_ * (wpy - by), 0)
+    return [int(qx), int(qy)]
 
 
+facing = "E"
+facing_deg = get_deg(facing)
+position = [0, 0]
+
+# Waypoint buffer
+wpb = [10, 1]
+
+# Set actual waypoint coordinates.
+waypoint = relative_coords(position, wpb)
+
+#
+move_coords = coord_dir(facing_deg)
+for d in data:
+    cmd, amt = pcmd.sub("", d), int(pnum.sub("", d))
+    # print(f"Cmd: {cmd}\tAmt: {amt}")
+
+    # Rotation. Should rotate waypoint about ship.
+    if cmd in ("L", "R"):
+        if cmd == "L":
+            # Update buffer only since ship doesn't move with this command.
+            wpb = rotate_wp((0,0), wpb, math.radians(amt))
+        else:
+            wpb = rotate_wp((0,0), wpb, math.radians(-amt))
+
+    # Move forward
+    elif cmd == "F":
+        # Increase amount by factor of 10.
+        for i in range(2):
+            # position[i] += (move_coords[i] * (waypoint[i] * amt))
+            position[i] += (wpb[i] * amt)
 
 
+    # Directional movement.  Should affect waypoint buffer only.
+    else:
+        # Move in direction; Facing variable remains the same.
+        dir_coords = coord_dir(get_deg(cmd))
+        for i in range(2):
+            wpb[i] += (dir_coords[i] * amt)
+
+    # Update waypoint with relative coords to ship.  This is usually required
+    # after each command, so placing it here reduces redundancies.
+    waypoint = relative_coords(position, wpb)
+
+    # print(f"WP: {waypoint}\tWPB: {wpb}\tPos.: {position}")
+
+
+result = manhattan(position)
+print(f"Part 2: The final Manhattan distance is: {result}")
 
 
