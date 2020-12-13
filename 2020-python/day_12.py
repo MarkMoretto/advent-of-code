@@ -15,7 +15,7 @@ from utils import current_file, day_number, get_lines, read_data
 
 
 # If testing, set DEBUG to True for a smaller data set.
-DEBUG: bool = True
+DEBUG: bool = False
 
 
 # Import data
@@ -35,8 +35,6 @@ else:
     DAY_NO: int = day_number(thisfile.stem)
 
     raw_data = read_data(f"day-{DAY_NO}-input.txt")
-
-# raw_data = read_data(f"day-12-input.txt")
 
 # Split data into lines for further processing.  Skip any missing or blank lines.
 try:
