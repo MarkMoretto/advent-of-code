@@ -1,13 +1,17 @@
 
 
 #include "fs.hxx"
+// #include "utils.hxx"
 
+// using namespace FS;
+using namespace UTILS;
 
 
 STRING get_cwd() {
     // Buffer to hold current path
     char BUFF[FILENAME_MAX];
     GetCurrentDir(BUFF, FILENAME_MAX);
+    
     STRING pwd = BUFF;
     return pwd;
 }
@@ -31,9 +35,9 @@ int change_dir_up() {
 
 STRING get_parent_dir() {
     STRING tmps = "";
-    int check_cd = change_dir_up();
+    int check_cd = FS::change_dir_up();
     if (check_cd == 0) {
-        tmps = get_cwd();
+        tmps = FS::get_cwd();
     }
     return tmps;
 }
@@ -61,4 +65,12 @@ void readfile_test(STRING filepath, STRING &s) {
 STRING create_filepath(STRING& parent, STRING& child) {
     STRING tmps = parent + R"(\)" + child;
     return tmps;
+}
+
+
+
+STRING filename_by_day(const char * daynumber) {
+    // STRING dn = daynumber;
+    STRING tmp = R"(data\day-" + daynumber + R"-input.txt)";
+    return tmp;
 }

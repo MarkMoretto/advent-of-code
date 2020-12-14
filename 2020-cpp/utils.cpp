@@ -1,6 +1,6 @@
 
 #include "utils.hxx"
-
+using namespace UTILS;
 
 // Print out all lines
 template <typename VecType>
@@ -37,7 +37,7 @@ void decompose(uint n, ivec &v) {
 
 
 // Split string by delimiter
-void explode(std::string s, const char * delim, svec &sout) {
+void explode(STRING s, const char * delim, svec &sout) {
     std::size_t last = 0;
     std::size_t next = 0;
     while ((next = s.find(delim, last)) != std::string::npos) {
@@ -48,11 +48,6 @@ void explode(std::string s, const char * delim, svec &sout) {
 }
 
 
-STRING filename_by_day(const char * daynumber) {
-    STRING dn = daynumber;
-    STRING tmp = R"(data\day-" + dn + R"-input.txt)";
-    return tmp;
-}
 
 
 // // Set a file path from parent and child string variables.

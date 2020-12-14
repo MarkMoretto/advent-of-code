@@ -7,7 +7,8 @@
 #include "utils.hxx"
 #include "day_1.hxx" // explode()
 
-
+using namespace UTILS;
+using namespace FS;
 
 int main() {
     STRING PartialPath = R"(data\day-1-input.txt)";

@@ -19,18 +19,24 @@
 #include <fstream>
 #include "utils.hxx"
 
+using namespace UTILS;
 
-STRING get_cwd();
+// https://docs.microsoft.com/en-us/cpp/cpp/namespaces-cpp?view=msvc-160
+// https://www.educba.com/c-plus-plus-namespace/
+namespace FS {
 
-int change_dir_up();
+    STRING get_cwd();
+    int change_dir_up();
+    STRING get_parent_dir();
 
 
-STRING get_parent_dir();
+    void readfile_test(STRING a, STRING& b);
 
+    // Create filepath from parent and child.
+    STRING create_filepath(STRING& a, STRING& b);
 
-void readfile_test(STRING, STRING&);
-
-// Create filepath from parent and child.
-STRING create_filepath(const STRING&, const STRING&);
+    // Create path to data file for a given event day number.
+    STRING filename_by_day(const char * x);
+}
 
 #endif

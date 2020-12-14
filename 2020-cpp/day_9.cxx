@@ -1,15 +1,15 @@
 
 
 
-#include <iostream>
-#include <algorithm>
-#include "fs.hxx"
-#include "utils.hxx"
-#include "day_9.hxx"
+// #include <iostream>
+// #include <algorithm>
+// #include "fs.hxx"
+// #include "utils.hxx"
+// #include "day_9.hxx"
 
 
 
-
+/*
 int main() {
     
     svec lines; // string vector for holding output lines of textfile.
@@ -22,7 +22,7 @@ int main() {
     // std::cout << "The parent directory is: " << ParentDir << std::endl;
     // std::cout << "The filepath is: " << FilePath << std::endl;
     
-    readfile_test(FilePath, contents);
+    FS::readfile_test(FilePath, contents);
 
     // Explode or split string by a delimiter.
     explode(contents, delimiter, lines);
@@ -75,3 +75,4 @@ int main() {
     // std::cout << "The file contents are:\n" << contents << std::endl;
     return 0;
 }
+*/
