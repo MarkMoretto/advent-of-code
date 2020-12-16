@@ -91,3 +91,58 @@ for ticket in all_tickets:
 
 result = sum(errors)
 print(f"Part 1: The error rate is: {result}")
+
+
+# Part 2
+raw_data = """class: 0-1 or 4-19
+row: 0-5 or 8-19
+seat: 0-13 or 16-19
+
+your ticket:
+11,12,13
+
+nearby tickets:
+3,9,18
+15,1,5
+5,14,9"""
+
+ticket_fields, my_ticket, nearby_tickets = raw_data.split("\n\n")
+fielddict = {}
+for line in ticket_fields.split("\n"):
+    name_, values_ = re.split(r":\s+", line)
+    fielddict[name_] = values_
+
+rangedict = {}
+for k,v in fielddict.items():
+    rangedict[k] = []
+    for rng in re.split(r"\s+or\s+", v):
+
+        l, h = rng.split("-")
+        rrng = list(range(int(l), int(h)+1))
+        rangedict[k].extend(rrng)
+
+# Drop field label
+nearby_tickets = [list(map(int, i.split(","))) for i in nearby_tickets.split("\n")[1:]]
+nearby_tickets_T = list(map(list, zip(*nearby_tickets)))
+# rowclass = {}
+
+# for fld, nums in rangedict.items():
+#     for tix in nearby_tickets_T:
+#         if set(tix).issubset(set(nums)):
+#             rowclass[fld] = tix
+
+for i, tix in enumerate(nearby_tickets_T):
+    counter = 0
+    for fld, nums in rangedict.items():
+        tmp = sum([1 for i in tix if i in nums])
+        if tmp == 3:
+            print(fld, tix)
+        for n in tix:
+            if n in v:
+                counter += 1
+        if counter == 3:
+            print(i, tix, k)
+    
+        
+    
+
