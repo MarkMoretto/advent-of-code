@@ -1,8 +1,8 @@
 
 """
 Purpose: Advent of Code challenge
-Day: 14
-Date created: 2020-12-13
+Day: 15
+Date created: 2020-12-15
 URL: https://adventofcode.com
 
 Contributor(s):
