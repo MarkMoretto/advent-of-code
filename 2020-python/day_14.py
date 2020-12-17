@@ -44,7 +44,7 @@ finally:
 
 enum_data = {i:v for i, v in enumerate(data)}
 mask_idxs = [i for i, v in enum_data.items() if v.startswith("mask")]
-mask_dict = {i:str(v).split("=")[1].strip() for i, v in enum_data.items() if i.startswith("mask")}
+mask_dict = {i:str(v).split("=")[1].strip() for i, v in enum_data.items() if v.startswith("mask")}
 mem_dict = [i for i in data if not i.startswith("mask")]
 
 for line in data:
@@ -104,6 +104,12 @@ print(f"Part 1: The total memory used was:\n\t\t{result}\t({result:,})")
 ####################################
 ######### --- Part 2 --- ###########
 ####################################
+
+raw_data = """mask = 1X000X0101XX101101X01X101X1000111X00
+mem[10004] = 3787163
+mem[18866] = 665403
+mem[13466] = 175657346
+mem[21836] = 99681152"""
 
 
 

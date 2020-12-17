@@ -191,7 +191,7 @@ for k, v in final.items():
     if str(k).startswith("departure"):
         result *= my_ticket[v]
 
-print(f"Part 2: The product of all 'departure' index ticket values is: {result}")
+print(f"Part 2: The product of all 'departure' index ticket values is: {result} ({result:,})")
 
 
 
