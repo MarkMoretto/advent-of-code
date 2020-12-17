@@ -10,6 +10,7 @@ Contributor(s):
 """
 
 import re
+from os import linesep
 from utils import current_file, day_number, get_lines, read_data
 
 # If testing, set DEBUG to True for a smaller data set.
@@ -61,6 +62,10 @@ def lowhigh(string):
         return int(L), int(H)
 
 
+####################################
+######### --- Part 1 --- ###########
+####################################
+
 re_nums = r"(\d+-\d+) or (\d+-\d+)"
 pnums = re.compile(re_nums)
 groups = ("class", "row", "seat")
@@ -93,24 +98,38 @@ result = sum(errors)
 print(f"Part 1: The error rate is: {result}")
 
 
-# Part 2
-raw_data = """class: 0-1 or 4-19
-row: 0-5 or 8-19
-seat: 0-13 or 16-19
+####################################
+######### --- Part 2 --- ###########
+####################################
+if DEBUG:
+    raw_data = """class: 0-1 or 4-19
+    row: 0-5 or 8-19
+    seat: 0-13 or 16-19
+    
+    your ticket:
+    11,12,13
+    
+    nearby tickets:
+    3,9,18
+    15,1,5
+    5,14,9"""
 
-your ticket:
-11,12,13
+# depature_list = [x for x in data if x.startswith("departure")]
+# my_ticket = [data[i+1] for i in range(len(data)) if data[i].startswith("your")][0]
+# other_tickets = data[data.index("nearby tickets:")+1:]
+# other_tickets.append(my_ticket)
+# all_tickets = list(map(int, re.split(r",", ",".join(other_tickets))))
 
-nearby tickets:
-3,9,18
-15,1,5
-5,14,9"""
+raw_data = raw_data.replace(linesep, "\n")
+ticket_fields, my_ticket, nearby_ = raw_data.split("\n\n")
 
-ticket_fields, my_ticket, nearby_tickets = raw_data.split("\n\n")
+my_ticket = list(map(int, my_ticket.split("\n")[1:][0].split(",")))
+
 fielddict = {}
 for line in ticket_fields.split("\n"):
     name_, values_ = re.split(r":\s+", line)
     fielddict[name_] = values_
+
 
 rangedict = {}
 for k,v in fielddict.items():
@@ -122,27 +141,59 @@ for k,v in fielddict.items():
         rangedict[k].extend(rrng)
 
 # Drop field label
-nearby_tickets = [list(map(int, i.split(","))) for i in nearby_tickets.split("\n")[1:]]
-nearby_tickets_T = list(map(list, zip(*nearby_tickets)))
-# rowclass = {}
+nearby_tickets = [list(map(int, i.strip().split(","))) for i in nearby_.split("\n")[1:-1]]
 
-# for fld, nums in rangedict.items():
-#     for tix in nearby_tickets_T:
-#         if set(tix).issubset(set(nums)):
-#             rowclass[fld] = tix
 
-for i, tix in enumerate(nearby_tickets_T):
-    counter = 0
-    for fld, nums in rangedict.items():
-        tmp = sum([1 for i in tix if i in nums])
-        if tmp == 3:
-            print(fld, tix)
-        for n in tix:
-            if n in v:
-                counter += 1
-        if counter == 3:
-            print(i, tix, k)
-    
-        
-    
+# Discard tickets with errors
+ef_tickets = [] # Error-free tickets
+for i, tix in enumerate(nearby_tickets):
+    if not any([e for e in errors if e in tix]):
+        ef_tickets.append(tix)
+
+ef_tickets_T = list(map(list, zip(*ef_tickets)))
+eftT_dict = {i:v for i, v in enumerate(ef_tickets_T)}
+
+
+
+selected = {}
+
+for fld, nums in rangedict.items():
+    selected[fld] = []
+    for i, tix_col in eftT_dict.items():
+        if set(tix_col).issubset(set(nums)):
+            selected[fld].append(i)
+                # selected.append(fld)
+                # print(i, fld, tix)
+
+# Create dictionary for sorting values.
+len_dict = {}
+for k, v in selected.items():
+    len_dict[k] = len(v)
+
+len_dict = dict(sorted(len_dict.items(), key=lambda x: x[1], reverse= False))
+
+# Create dictionary of final column indices
+final = {}
+tmp = []
+for k in len_dict:
+    print(tmp, final)
+    if len(tmp) == 0:
+        tmp.append(selected[k][0])
+        final[k] = tmp[-1]
+    else:
+        res = [i for i in selected[k] if not i in tmp]
+        if len(res) == 1:
+            tmp.append(res[-1])
+            final[k] = res[-1]
+
+result = 1
+for k, v in final.items():
+    if str(k).startswith("departure"):
+        result *= my_ticket[v]
+
+print(f"Part 2: The product of all 'departure' index ticket values is: {result}")
+
+
+
+
 

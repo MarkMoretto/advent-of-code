@@ -57,7 +57,7 @@ commandz = {i:re.search(r"(\d+).+?(\d+)", v).groups() for i, v in enum_data.item
 
 commands = {i:(int(v[0]), int(v[1])) for i, v in commandz.items()}
 
-def getcmd(string):
+# def getcmd(string):
 
 
 
