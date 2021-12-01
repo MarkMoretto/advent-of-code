@@ -1,0 +1,13 @@
+# Python
+venv/
+__pycache__/
+
+# Local
+.vscode/
+dev[_-]*.*
+
+.directory
+
+# Java/Scala
+scala/*.class
+*.metals/
