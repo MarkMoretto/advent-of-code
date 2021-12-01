@@ -39,16 +39,20 @@ def f(predicate: bool, *args):
 
 depths = stoi(data)
 
-part_a_result = agg_sum(
-    f(lambda a, b: 1 if b-a>0 else 0, depths[:-1], depths[1:])
-)
+
+### --- Part 1 --- ###
+def solution_a(depth_list: list):
+    return agg_sum(
+        f(lambda a, b: 1 if b-a>0 else 0, depth_list[:-1], depth_list[1:])
+    )
+
+part_a_result = solution_a(depths)
 print(part_a_result)
 
 
-# --- Part 2 --- #
+
+### --- Part 2 --- ###
 WINDOW_SIZE = 3
-# sm_depths = stoi(depth_data)
-# max_range = len(sm_depths) - WINDOW_SIZE + 1
 
 
 def solution_b(depth_list: list, stepsize: int = WINDOW_SIZE) -> int:
@@ -65,6 +69,5 @@ def solution_b(depth_list: list, stepsize: int = WINDOW_SIZE) -> int:
             prev_measure = current_measure
     return increased_count
 
-# solution_b(sm_depths) # 5
 part_b_result = solution_b(depths)
 print(part_b_result)
