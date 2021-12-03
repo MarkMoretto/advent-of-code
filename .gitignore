@@ -1,13 +1,19 @@
 # Python
 venv/
+whereami.py
 __pycache__/
 
 # Local
 .vscode/
 dev[_-]*.*
 
+# extensions
+*.exe
 .directory
 
 # Java/Scala
 scala/*.class
 *.metals/
+
+# Microsoft
+2020-excel-vba/
