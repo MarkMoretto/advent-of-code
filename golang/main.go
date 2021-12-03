@@ -26,10 +26,8 @@ func getData(output *[]int) {
 	}
 	defer file.Close()
 
-
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		fmt.Println(scanner.Text())
 		i, err := strconv.Atoi(scanner.Text())
 		if err != nil {
 			fmt.Println(err)

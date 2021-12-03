@@ -1,23 +1,30 @@
 package day1
 
-// https://adventofcode.com/2021/day/1
+/* Advent of Code: Day 1
+See: https://adventofcode.com/2021/day/1
+*/
 import "fmt"
 
 // const testData = []int{199, 200, 208, 210, 200, 207, 240, 269, 260, 263}
 
+// Struct to hold Depth items and info.
 type Depths struct {
-	items []int
-	netIncrease int
+	items []int 		// List of depth values
+	netIncrease int		// Value to hold net increase count acorss all depth values.
 }
 
-
+// Return size of Depths instance.
+// return {int} number of elements in Depths instance.
 func (d *Depths) Size() int {
 	return len(d.items)
 }
 
+// Add item to Depths instance.
+// parameter {int} item - Integer value to append to list.
 func (d *Depths) Add(item int) {
 	d.items = append(d.items, item)
 }
+
 
 func (d *Depths) AddAll(depths []int) {
 	for i := range depths {
