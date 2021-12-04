@@ -21,3 +21,5 @@ scala/*.class
 
 # Masked
 2021-cpp
+rust-2021
+guessing-game
