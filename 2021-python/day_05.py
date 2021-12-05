@@ -18,35 +18,64 @@ class Point:
 
     def __repr__(self):
         return f"<{self.__class__.__name__} ({self.X}, {self.y})>"
+    
+    # Moving on normal Cartesian grid.
+    def up(self):
+        self.y -= 1
 
-class Vector:
+    def down(self):
+        self.y += 1
+
+    def left(self):
+        self.X -= 1
+
+    def right(self):
+        self.X += 1
+
+
+class DistanceMixin:
+    def euclidean(self, p1: Point, p2: Point) -> float:
+        return ((p1.X - p2.X)**2 + (p1.y - p2.y)**2)**(1/2)
+
+    def taxicab(self, p1: Point, p2: Point) -> int:
+        return abs(p1.X - p2.X) + abs(p1.y - p2.y)
+
+
+class Vector(DistanceMixin):
     def __init__(self, start: Point, end: Point) -> None:
         self.start = start
         self.end = end
 
     def __repr__(self):
-        return f"""
-        <Vector
-            start: {self.start}
-            end:   {self.end}
-        />"""
+        pp1 = f"{self.start.X}, {self.start.y}"
+        pp2 = f"{self.end.X}, {self.end.y}"
+        return f"<Vector  start: ({pp1}), end: ({pp2}) />"
+    
+    @property
+    def taxicab_dist(self) -> int:
+        return self.taxicab(self.start, self.end)
 
-# Distance formulae
-def euclidean_dist(p1: Point, p2: Point) -> float:
-    return ((p1.X - p2.X)**2 + (p1.y - p2.y)**2)**(1/2)
+    @property
+    def euc_dist(self) -> float:
+        return self.euclidean(self.start, self.end)    
 
-def taxicab_dist(p1: Point, p2: Point) -> int:
-    return abs(p1.X - p2.X) + abs(p1.y - p2.y)
-
-# p1 = Point(0, 9)
-# p2 = Point(5, 9)
-# euclidean_dist(p1, p2)
+    def __is_negative(self):
+        _cond1 = self.start.X > self.end.X
+        _cond2 = self.start.y > self.end.y
+        return _cond1 or _cond2
 
 
 def valid_pair(src: Point, dest: Point) -> bool:
+    """Determine if Points are valid based on condition
+    that at least one of X or y pairs must be equal.
+    """
     return src.X == dest.X or src.y == dest.y
 
-# Regular expression to capture relevant data.
+
+########################
+# --- Process data --- #
+
+# Regular expression
 re_pattern = r"(\d+,\d+)\s*\W+\s*(\d+,\d+)"
 p = re.compile(re_pattern, flags = re.I)
 
@@ -63,13 +92,11 @@ def create_vectors(value_list: list) -> list:
     return _vectors
 
 vectors = create_vectors(lines)
-
-def valid_vec(src: Point, dest: Point) -> bool:
-    return src.X == dest.X or src.y == dest.y
+# vectors[0].taxicab_dist # 5
 
 
 w, h = 9, 9
 grid = dict()
 for i in range(h + 1):
     for j in range(w + 1):
-        grid[(i,j)] = "."
+        grid[(i,j)] = 0
