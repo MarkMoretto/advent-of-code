@@ -1,0 +1,26 @@
+# Python
+venv/
+whereami.py
+__pycache__/
+
+# Local
+.vscode/
+dev[_-]*.*
+
+# extensions
+*.exe
+.directory
+
+# Java/Scala
+scala/*.class
+*.metals/
+
+# Microsoft
+2020-excel-vba/
+
+
+# Masked
+2021-cpp
+rust-2021
+2021[_-]rust
+guessing-game
