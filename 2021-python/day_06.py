@@ -4,6 +4,7 @@
 """
 Purpose: Advent of Code 2021 - Day 6
 Date: 2021-12-06
+URL: https://adventofcode.com/2021/day/6
 Contributor(s):
     mark moretto
 """
@@ -11,7 +12,7 @@ Contributor(s):
 from typing import List, Union
 from pathlib import Path
 
-# Processing local data.
+# Get data
 DATA_DIR = Path("data")
 DATA_FILE_A = DATA_DIR.joinpath("day06.txt")
 data = DATA_FILE_A.open(mode="r", encoding="utf-8").read()
@@ -21,9 +22,9 @@ Integer = int
 Float = float
 Number = Union[int, float]
 IList = List[Integer]
-NList = List[Number]
+NumList = List[Number]
 
-def stoi(string: String) -> NList:
+def stoi(string: String) -> NumList:
     return list(map(int, string.split(",")))
 
 ##################
