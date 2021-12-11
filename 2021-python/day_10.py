@@ -11,10 +11,8 @@ Contributor(s):
     mark moretto
 """
 
-import re
-from os import linesep
 from pathlib import Path
-from collections import Counter, deque
+from collections import deque
 from typing import List, Union
 
 DATA_DIR = Path("data")
@@ -99,7 +97,7 @@ print(f"Part 1 solution: {result}")
 ##################
 
 # Get remaining list items.
-lines_2 = [line for i, line in enumerate(lines) if not i in corrupted_lines]
+lines_lines = [line for i, line in enumerate(lines) if not i in corrupted_lines]
 
 # Updated value map for Part 2
 value_map = {
@@ -126,7 +124,7 @@ def get_middle_score(items: list) -> int:
 
 # Hold results for each line.
 results = list()
-for line in lines_2:
+for line in lines_lines:
     # We will continue replacing all valid bracket pairs
     # untill there are no more replacements to be made.
     while True:

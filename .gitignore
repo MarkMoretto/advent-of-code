@@ -18,9 +18,10 @@ scala/*.class
 # Microsoft
 2020-excel-vba/
 
+# Rust
+Cargo.lock
 
 # Masked
 2021-cpp
 rust-2021
-2021[_-]rust
 guessing-game
