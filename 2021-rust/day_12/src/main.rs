@@ -29,7 +29,7 @@ impl Node {
 }
 
 pub struct Tree {
-    arena: Vec<Option<NodeIndex>>,
+    arena: Vec<Option<Node>>,
     root: Option<NodeIndex>,
 }
 
@@ -41,7 +41,7 @@ impl Tree {
         }
     }
 
-    pub fn iter(&mut self) -> PreorderIter {
+    pub fn iter(&self) -> PreorderIter {
         PreorderIter::new(self.root)
     }
 
@@ -55,7 +55,7 @@ impl Tree {
         idx
     }
 
-    pub fn delete_node(&mut self, index: NodeIndex) -> Option<Node> {
+    pub fn delete_node_at(&mut self, index: NodeIndex) -> Option<Node> {
         if let Some(node) = self.arena.get_mut(index) {
             node.take()
         } else {
@@ -71,7 +71,7 @@ impl Tree {
         }
     }
 
-    pub fn node_at_mut(&self, index: NodeIndex) -> Option<&mut Node> {
+    pub fn node_at_mut(&mut self, index: NodeIndex) -> Option<&mut Node> {
         return if let Some(node) = self.arena.get_mut(index) {
             node.as_mut()
         } else {
@@ -80,12 +80,12 @@ impl Tree {
     }
 }
 
-pub struct PreorderIter<'a> {
-    stack: Vec<&'a mut Node>,
+pub struct PreorderIter {
+    stack: Vec<NodeIndex>,
 }
 
-impl<'a> PreorderIter<'a> {
-    pub fn new(root: Option<&'a mut Node>) -> Self {
+impl PreorderIter {
+    pub fn new(root: Option<NodeIndex>) -> Self {
         if let Some(node) = root {
             PreorderIter {
                 stack: vec![node]
@@ -96,26 +96,26 @@ impl<'a> PreorderIter<'a> {
             }
         }
     }
-}
+
+    fn next(&mut self, tree: &Tree) -> Option<NodeIndex> {
+        while let Some(node_idx) = self.stack.pop() {
+            if let Some(node) = tree.node_at(node_idx) {
+                if let Some(right) = node.right {
+                    self.stack.push(right)
+                }
 
 
-impl<'a> Iterator for PreorderIter<'a> {
-    type Item = &'a mut Node;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        if let Some(node) = self.stack.pop() {
-            if let Some(right) = &mut node.right {
-                self.stack.push(right)
-            }
-
-            if let Some(left) = &mut node.left {
-                self.stack.push(left)
-            }
-            return Some(node)
+                if let Some(left) = node.left {
+                    self.stack.push(left)
+                }
+            return Some(node_idx)
         }
-        return None
     }
+        return None
+    }    
 }
+
+
 
 
 fn get_input(fname: &str) -> String {
