@@ -1,10 +1,12 @@
 #!/bin/python
 
 __all__ = [
+    "Callable",
     "Dict",
     "Float",
     "IntList",
     "Integer",
+    "Iterable",
     "Iterator",
     "List",
     "Matrix",
@@ -14,7 +16,7 @@ __all__ = [
     "Union",
     ]
 
-from typing import Dict, Iterator, List, Union
+from typing import Callable, Dict, Iterable, Iterator, List, Union
 
 # Types
 String = str

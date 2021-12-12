@@ -14,7 +14,8 @@ Contributor(s):
 
 from pathlib import Path
 
-DATA_DIR = Path("data")
+ROOT_DIR = Path(".")
+DATA_DIR = ROOT_DIR.joinpath("data")
 
 # Day of event
 AOC_DAY: int
@@ -27,7 +28,8 @@ USE_SAMPLE_TF: bool = False
 def get_data(aoc_day_number: int, use_sample: bool = True) -> str:
     def create_path(day_n, sample_tf) -> Path:
         """Returns Path object."""
-        DATA_DIR.joinpath(f"day{day_n:0>2}{'-sample' if sample_tf else ''}.txt")
+        string_path: str = f"day{day_n:0>2}{'-sample' if sample_tf else ''}.txt"
+        return DATA_DIR.joinpath(string_path)
 
     DATA_FILEPATH = create_path(aoc_day_number, use_sample)
 
