@@ -13,10 +13,11 @@ __all__ = [
     "NumList",
     "Number",
     "String",
+    "Tuple",
     "Union",
     ]
 
-from typing import Callable, Dict, Iterable, Iterator, List, Union
+from typing import Callable, Dict, Iterable, Iterator, List, Tuple, Union
 
 # Types
 String = str
