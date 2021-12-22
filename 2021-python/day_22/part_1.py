@@ -28,17 +28,17 @@ lines = raw_data.splitlines()
 
 
 """  Distances
-                        (3, 4, 5)
-                        /
-                 . . . x
-        {y}     .      .      
-            *  .       .      * {z}
-            * .        .     *
-            *          .    *
-            *         .    *
-            *        .    *
-            *       .    *
-            0 * * * * * * {x}
+                                        (3, 4, 5)
+                                       /
+            *       .    .     .     x
+        {y} *     .                . .     
+            *   .                .   .    * {z}
+            * .                .     .  *
+            *                .        *
+            *              .        *
+            *            .        *
+            *          .        *
+            O  *  *  *  *  *  * {x}
            /
   (0, 0, 0)
 """
@@ -48,12 +48,8 @@ class BaseCube:
         self.x = x
         self.y = y
         self.z = z
+        self.xyz = [x, y, z]
 
-class Cube(BaseCube):
-    def __init__(self, x: int, y: int, z: int) -> None:
-        super().__init__(x, y, z)
-        self.origin = BaseCube(0, 0, 0)
-    
     def __repr__(self):
         return f"<Cube ({self.x}, {self.y}, {self.z})>"
 
@@ -63,11 +59,9 @@ class Cube(BaseCube):
     def __hash__(self) -> int:
         return hash(str(self))
 
-    @property
-    def this_cube(self) -> BaseCube:
-        """Return BaseCube with (x, y, z) of current instance.
-        """
-        return BaseCube(self.x, self.y, self.z)
+    def __iter__(self):
+        for el in self.xyz:
+            yield el
 
     @staticmethod
     def distance(cube_1: BaseCube, cube_2: BaseCube) -> float:
@@ -76,6 +70,21 @@ class Cube(BaseCube):
         yy = (cube_2.y - cube_1.y)**2
         zz = (cube_2.z - cube_1.z)**2
         return (xx + yy + zz) ** (1/2)
+
+
+class Cube(BaseCube):
+    def __init__(self, x: int, y: int, z: int) -> None:
+        super().__init__(x, y, z)
+        self.origin = BaseCube(0, 0, 0)
+    
+    def __hash__(self) -> int:
+        return hash(str(self))
+
+    @property
+    def this_cube(self) -> BaseCube:
+        """Return BaseCube with (x, y, z) of current instance.
+        """
+        return BaseCube(self.x, self.y, self.z)
 
     def __self_other_dist(self, other: BaseCube):
         _self = self.distance(self.origin, self.this_cube)
@@ -102,7 +111,7 @@ class Cube(BaseCube):
 
     def __ge__(self, other: BaseCube):
         dist_self, dist_other = self.__self_other_dist(other)
-        return dist_self >= dist_other        
+        return dist_self >= dist_other
 
 
 class RegexPattern:
@@ -112,11 +121,18 @@ class RegexPattern:
     def __get__(self, obj, objtype=None) -> str:
         return r"""
             ^(?P<directive>on|off)\s
-            \w.(?P<x_lower>\d+)\.\.(?P<x_upper>\d+),
-            \w.(?P<y_lower>\d+)\.\.(?P<y_upper>\d+),
-            \w.(?P<z_lower>\d+)\.\.(?P<z_upper>\d+)$
+            \w.(?P<x_lower>-?\d+)\.\.(?P<x_upper>-?\d+),
+            \w.(?P<y_lower>-?\d+)\.\.(?P<y_upper>-?\d+),
+            \w.(?P<z_lower>-?\d+)\.\.(?P<z_upper>-?\d+)$
         """
 
+sample = "on x=-20..26,y=-36..17,z=-47..7"
+directive, sample = sample.split(" ", maxsplit=1)
+[str(s).split("=")[1].split("."*2) for s in sample.split(",")]
+
+# def constraint_check(*args) -> bool:
+#     return all(map(lambda n: -50 <= n <= 50, args))
+# constraint_check(-50, -49, 50, 49)
 
 class RebootFuncsMixer:
     # Descriptor object
@@ -125,23 +141,65 @@ class RebootFuncsMixer:
     def __init__(self) -> None:
         self.p = re.compile(self.REGEX_PATTERN, flags = re.X | re.M)
 
-    def parse_step(self, s: str) -> Tuple[range, str]:
+    def get_pairs(self, s: str) -> list:
+        """Parse dimension specifications to list of integer pairs.
+        """
+        tmp = []
+        for item in s.split(","):
+            tmp.append(
+                self.to_int(str(item).split("=")[1].split("."*2))
+            )
+        return [sorted(pair) for pair in tmp]
+
+    @staticmethod
+    def to_int(pair: List[str]) -> List[int]:
+        """Convert string iterable to integer iterable."""
+        return list(map(int, pair))
+
+    @staticmethod
+    def ravel(nested_items: Iterable) -> List[int]:
+        """Unnest nested items."""
+        return [x for y in nested_items for x in y]
+
+    @staticmethod
+    def as_range(pair: List[int]) -> Iterator:
+        return range(pair[0], pair[1] + 1)
+    
+    @staticmethod
+    def constraint_check(*args) -> bool:
+        """Part 1: Check if all values fall within specified range.
+        """
+        return all(map(lambda n: -50 <= n <= 50, args))
+
+    def parse_step(self, string: str) -> Tuple[range, str]:
         """Return ranges for (x, y, z) along with the specified directive.
         """
-        mres = self.p.match(s)
-        d = mres.groupdict()
-        directive = d["directive"]
-        x_lo, x_hi = map(int, [d["x_lower"], d["x_upper"]])
-        y_lo, y_hi = map(int, [d["y_lower"], d["y_upper"]])
-        z_lo, z_hi = map(int, [d["z_lower"], d["z_upper"]])
-        return range(x_lo, x_hi+1), range(y_lo, y_hi+1), range(z_lo, z_hi+1), directive
+        # mres = self.p.match(s)
+        # d = mres.groupdict()
+        # directive = d["directive"]
+        # x_lo, x_hi = sorted(map(int, [d["x_lower"], d["x_upper"]]))
+        # y_lo, y_hi = sorted(map(int, [d["y_lower"], d["y_upper"]]))
+        # z_lo, z_hi = sorted(map(int, [d["z_lower"], d["z_upper"]]))
+
+        state, specs = string.split(" ", maxsplit=1)
+        pairs = self.get_pairs(specs)
+        # Part 1 constraint
+        all_pairs = self.ravel(pairs)
+        if self.constraint_check(*all_pairs):
+            return self.as_range(pairs[0]), self.as_range(pairs[1]), self.as_range(pairs[2]), state
 
 
+# bc0 = BaseCube(1, 2, 3)
+# bc1 = BaseCube(-9, -8, -7)
+# bc2 = BaseCube(9, 8, 7)
+# [f"{g[0]}, {g[1]}, {g[2]}" for g in zip(bc0, bc1, bc2)]
+# all([g[2] >= g[0] and g[2] <= g[1] for g in zip(bc1, bc2, bc0)])
+# all([g[2] >= g[0] and g[2] >= g[1] for g in zip(bc1, bc2, bc0)])
 
 class Cuboid(RebootFuncsMixer):
     def __init__(self) -> None:
-        self.cubes = dict()
         super().__init__()
+        self.cubes = dict()
 
     def set_cubes(self, step_string: str) -> None:
         """Create set of Cubes from Reboot Step string/command.
@@ -191,19 +249,28 @@ class RebootStep(Cuboid):
     def __init__(self, reboot_string: str) -> None:
         super().__init__()
         self.set_cubes(reboot_string)
+    
 
 
-
-sample = lines[0]
 
 rs1 = RebootStep(lines[0])
 rs2 = RebootStep(lines[1])
+rs3 = RebootStep(lines[2])
+rs4 = RebootStep(lines[3])
 
+rsX = RebootStep(lines[-1])
 
 cubes: set = rs1.cube_set
+len(cubes) # 27
 cubes.update(rs2.cube_set)
-cubes.difference(rs2.cube_set)
-rs2.cube_set.difference(rs1.cube_set)
+len(cubes) # 46
+# 46 - 27 == 19
+for c in cubes.intersection(rs3.cube_set):
+    cubes.remove(c)
+len(cubes) # 38
+cubes.update(rs4.cube_set)
+len(cubes) # 39
+
 
 
 # Regex
