@@ -39,7 +39,7 @@ def get_data(aoc_day_number: int, use_sample: bool = True) -> str:
 def get_local_data(aoc_day_number: int, use_sample: bool = True) -> str:
     def create_path(sample_tf) -> Path:
         """Returns Path object."""
-        string_path: str = f"day_{aoc_day_number}/{'sample' if sample_tf else 'data'}.txt"
+        string_path: str = f"day_{aoc_day_number}/{'sample' if sample_tf else 'input'}-data.txt"
         return ROOT_DIR.joinpath(string_path)
 
     DATA_FILEPATH = create_path(use_sample)
