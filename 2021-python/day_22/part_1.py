@@ -12,8 +12,10 @@ Contributor(s):
 from __future__ import annotations
 
 import re
+from collections import Counter
+from functools import lru_cache
 from itertools import product
-from dataclasses import dataclass # https://docs.python.org/3/library/dataclasses.html
+# from dataclasses import dataclass # https://docs.python.org/3/library/dataclasses.html
 
 # Locals
 from helpful.fs import get_data, get_local_data
@@ -27,17 +29,138 @@ raw_data = get_local_data(AOC_DAY, USE_SAMPLE_TF)
 lines = raw_data.splitlines()
 
 
+def to_int(pair: List[str]) -> List[int]:
+    """Convert string iterable to integer iterable."""
+    return list(map(int, pair))
+
+def get_pairs(s: str) -> list:
+    """Parse dimension specifications to list of integer pairs.
+    """
+    tmp = []
+    for item in s.split(","):
+        tmp.append(
+            to_int(str(item).split("=")[1].split("."*2))
+        )
+    return [sorted(pair) for pair in tmp]
+
+def ravel(nested_items: Iterable) -> List[int]:
+    """Unnest nested items."""
+    return [x for y in nested_items for x in y]
+
+def abs_diff(pair: List[int]) -> int:
+    return abs(pair[1]-pair[0]) + 1
+
+# def update_minmax(current, mm):
+#     if prev_pairs is None:
+
+#     z = zip()
+#     [abs_diff(p) for p in pairs]
+
+def constraint_check(*args) -> bool:
+    """Part 1: Check if all values fall within specified range.
+    """
+    return all(map(lambda n: -50 <= n <= 50, args))
+
+minmax = [
+    [0, 0],
+    [0, 0],
+    [0, 0],
+    ]
+
+
+# Iterate when implementing
+sample = lines[0]
+state, specs = sample.split(" ", maxsplit=1)
+pairs = get_pairs(specs)
+
+
+steps = []
+for i, line in enumerate(lines):
+    directive, specs = line.split(" ", maxsplit=1)
+    pairs = get_pairs(specs)
+    all_pairs = ravel(pairs)
+    if constraint_check(*all_pairs):
+        steps.append(
+            dict(
+                index = i,
+                state = directive,
+                pairs = pairs,
+                ranges = [set(range(p[0],p[1]+1)) for p in pairs],
+                # diffs = [abs_diff(p) for p in pairs],
+                )
+            )
+
+current_count = 0
+
+p0 = steps[0]["pairs"]
+p0_ranges = [set(range(p[0],p[1]+1)) for p in p0]
+
+tmp = 1
+for item in p0_ranges:
+    tmp *= len(item)
+current_count += tmp
+
+#TODO: Figure out 19 updates from p0_ranges
+p1 = steps[1]["pairs"]
+p1_ranges = [set(range(p[0],p[1]+1)) for p in p1]
+
+a = (11,12,13)
+a = (11,12,13)
+p = product(range(p1[0][0], p1[0][1]+1), range(p1[1][0], p1[1][1]+1), range(p1[2][0], p1[2][1]+1))
+all_values = [x for y in p for x in y]
+counts = Counter(all_values)
+
+for el in p:
+    print(sorted(el))
+
+
+
+for i in range(3):
+    p0_ranges[i].update(p1_ranges[i])
+    p1_ranges[0].difference(p0_ranges[0])
+
+tmp_minmax = minmax
+diffs = [0, 0, 0]
+for i, (mm, pair) in enumerate(zip(minmax, p0)):
+    tmp_minmax[i][0] -= abs(pair[0] - mm[0])
+    tmp_minmax[i][1] += abs(pair[1] - mm[1])
+
+
+net_min = [0, 0, 0]
+net_max = [0, 0, 0]
+
+a_min = [-20, -36, -47]
+a_max = [26, 17, 7]
+net_min = min(net_min, a_min)
+net_max = max(net_max, a_max)
+a_net = [abs(b-a) for a, b in zip(a_min, a_max)]
+total_dims = a_net[0]*a_net[1]*a_net[2]
+
+
+
+b_min = [-20, -21, -26]
+b_max = [33, 23, 28]
+
+
+
+p1 = steps[1]["pairs"]
+
+
+
+
+
+
 """  Distances
                                         (3, 4, 5)
                                        /
-            *       .    .     .     x
-        {y} *     .                . .     
-            *   .                .   .    * {z}
-            * .                .     .  *
-            *                .        *
-            *              .        *
-            *            .        *
-            *          .        *
+            *      .    .     .     x
+        {y} *    .                . .     
+            *  .                .   .    * {z}
+            *                 .     .  *
+            *               .        *
+            *             .        *
+            *           .        *
+            *         .        *
             O  *  *  *  *  *  * {x}
            /
   (0, 0, 0)
@@ -126,13 +249,6 @@ class RegexPattern:
             \w.(?P<z_lower>-?\d+)\.\.(?P<z_upper>-?\d+)$
         """
 
-sample = "on x=-20..26,y=-36..17,z=-47..7"
-directive, sample = sample.split(" ", maxsplit=1)
-[str(s).split("=")[1].split("."*2) for s in sample.split(",")]
-
-# def constraint_check(*args) -> bool:
-#     return all(map(lambda n: -50 <= n <= 50, args))
-# constraint_check(-50, -49, 50, 49)
 
 class RebootFuncsMixer:
     # Descriptor object
@@ -174,42 +290,44 @@ class RebootFuncsMixer:
     def parse_step(self, string: str) -> Tuple[range, str]:
         """Return ranges for (x, y, z) along with the specified directive.
         """
-        # mres = self.p.match(s)
-        # d = mres.groupdict()
-        # directive = d["directive"]
-        # x_lo, x_hi = sorted(map(int, [d["x_lower"], d["x_upper"]]))
-        # y_lo, y_hi = sorted(map(int, [d["y_lower"], d["y_upper"]]))
-        # z_lo, z_hi = sorted(map(int, [d["z_lower"], d["z_upper"]]))
-
         state, specs = string.split(" ", maxsplit=1)
         pairs = self.get_pairs(specs)
+
         # Part 1 constraint
         all_pairs = self.ravel(pairs)
         if self.constraint_check(*all_pairs):
             return self.as_range(pairs[0]), self.as_range(pairs[1]), self.as_range(pairs[2]), state
 
 
-# bc0 = BaseCube(1, 2, 3)
-# bc1 = BaseCube(-9, -8, -7)
-# bc2 = BaseCube(9, 8, 7)
-# [f"{g[0]}, {g[1]}, {g[2]}" for g in zip(bc0, bc1, bc2)]
-# all([g[2] >= g[0] and g[2] <= g[1] for g in zip(bc1, bc2, bc0)])
-# all([g[2] >= g[0] and g[2] >= g[1] for g in zip(bc1, bc2, bc0)])
-
 class Cuboid(RebootFuncsMixer):
     def __init__(self) -> None:
         super().__init__()
         self.cubes = dict()
+        self.__directive = None
+
+    @lru_cache(maxsize=None)
+    def __get_cube(self, x, y, z):
+        return Cube(x, y, z)
 
     def set_cubes(self, step_string: str) -> None:
         """Create set of Cubes from Reboot Step string/command.
         """
-        x_rng, y_rng, z_rng, d = self.parse_step(step_string)
-        for p in product(x_rng, y_rng, z_rng):
-            # Cubes are hashable, so we can set them as keys in
-            # a dictionary object and then update the 'state' of
-            # the cube, as needed.
-            self.cubes[Cube(*p)] = 1 if d == "on" else 0
+        try:
+            x_rng, y_rng, z_rng, d = self.parse_step(step_string)
+            if self.__directive is None:
+                self.__directive = d
+            for p in product(x_rng, y_rng, z_rng):
+                _c = self.__get_cube(*p)
+                # Cubes are hashable, so we can set them as keys in
+                # a dictionary object and then update the 'state' of
+                # the cube, as needed.
+                self.cubes[_c] = 1 if d == "on" else 0
+        except TypeError:
+            self.cubes = None
+
+    @property
+    def directive(self) -> str:
+        return self.__directive
 
     def get_state(self, cube) -> int:
         return self.cubes[cube]
@@ -249,8 +367,20 @@ class RebootStep(Cuboid):
     def __init__(self, reboot_string: str) -> None:
         super().__init__()
         self.set_cubes(reboot_string)
-    
 
+# Run process
+cubes = set()
+for step in lines:
+    rebooter = RebootStep(step)
+    if rebooter.cubes:
+        if rebooter.directive == "on":
+            cubes.update(rebooter.cube_set)
+        else:
+            for c in cubes.intersection(rebooter.cube_set):
+                cubes.remove(c)
+
+# should be 590784 for larger sample set
+len(cubes) # 590784 OK!
 
 
 rs1 = RebootStep(lines[0])
