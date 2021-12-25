@@ -4,6 +4,7 @@ __all__ = [
     "Callable",
     "Dict",
     "Float",
+    "Grid",
     "IntList",
     "Integer",
     "Iterable",
@@ -27,4 +28,10 @@ Number = Union[int, float]
 IntList = List[Integer]
 NumList = List[Number]
 
+# Multi-dimensional structures
 Matrix = List[IntList]
+Grid = List[IntList]
+
+# Navigation
+Coordinate = Tuple[Number, Number]
+Point = Tuple[Number, Number]
