@@ -99,18 +99,13 @@ class Solution(FunctionMixin):
         self.djikstras_algo()
         return self._distance_map[(self.max_dim-1, self.max_dim-1)]
 
+if __name__ == "__main__":
+    # Part 1
+    s1 = Solution(matrix, 1)
+    result = s1.run()
+    print(f"Part 1 result: {result}")
 
-s1 = Solution(matrix, 1)
-result = s1.run()
-print(f"Part 1 result: {result}")
-
-s2 = Solution(matrix, 5)
-result = s2.run()
-print(f"Part 2 result: {result}")
-
-
-
-# def this_cost(X, y, divisor=nrc-1):
-#     tmp = matrix[y%nrc, X%nrc]
-#     tmp += (y//nrc + X//nrc)
-#     return 1 + (tmp-1) % divisor
+    # Part 2
+    s2 = Solution(matrix, 5)
+    result = s2.run()
+    print(f"Part 2 result: {result}")
