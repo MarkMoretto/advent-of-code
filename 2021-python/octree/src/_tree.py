@@ -5,22 +5,22 @@ from __future__ import annotations
 # https://scialert.net/fulltext/?doi=itj.2007.1286.1289
 # https://iq.opengenus.org/octree/
 
+
+#### Voxel info
+# https://github.com/bradylowe/registerpc/blob/4e360682e82f0216924bef709c8f92d8456501ac/registerpc/pointcloud/Voxelize.py
+
+
 from enum import Enum, auto
 from typing import List, Union
-
-
 Number = Union[int, float]
-
 
 class Point3d:
     x: Number
     y: Number
     z: Number
 
-
 class ExtraAttrs:
     class_name: str
-
 
 class Point(Point3d, ExtraAttrs):
     def __init__(self, x=-1, y=-1, z=-1) -> None:
