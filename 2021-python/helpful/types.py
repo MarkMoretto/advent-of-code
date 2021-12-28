@@ -11,11 +11,13 @@ __all__ = [
     "Iterator",
     "List",
     "Matrix",
+    # "MinMax",
     "NumList",
     "Number",
     "String",
     "Tuple",
     "Union",
+    # "XYZ",
     ]
 
 from typing import Callable, Dict, Iterable, Iterator, List, Tuple, Union
@@ -35,3 +37,5 @@ Grid = List[IntList]
 # Navigation
 Coordinate = Tuple[Number, Number]
 Point = Tuple[Number, Number]
+# MinMax = Tuple[Number, Number]
+# XYZ = Tuple[MinMax, MinMax, MinMax]
