@@ -1,0 +1,1 @@
+/home/mark/code-challenge-sites/advent-of-code/2022/rust/target/debug/solution: /home/mark/code-challenge-sites/advent-of-code/2022/rust/aoc_common/src/lib.rs /home/mark/code-challenge-sites/advent-of-code/2022/rust/solution/src/main.rs

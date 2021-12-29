@@ -3,6 +3,8 @@
 from enum import Enum, auto
 from typing import List, Union
 
+from ._enum import Region
+from ._point import Point
 from ._types import Number
 
 # Dupicate section from ./._point.py
@@ -19,13 +21,13 @@ class Point(Point3d, ExtraAttrs):
         self.x = x
         self.y = y
         self.z = z
-    
+
     def __str__(self):
         return f"{self.x} {self.y} {self.z}"
 
     def __repr__(self):
         return f"<P ({self.x}, {self.y}, {self.z}) />"
-    
+
     def __hash__(self):
         return hash(str(self))
 
@@ -38,7 +40,7 @@ class Point(Point3d, ExtraAttrs):
 
     def __ne__(self, other: Point):
         return self.x != other.x or self.y != other.y or self.z != other.z
-    
+
     def __lt__(self, other: Point):
         return self.__dist() < other.__dist()
 
@@ -52,32 +54,21 @@ class Point(Point3d, ExtraAttrs):
         return self.__dist() >= other.__dist()
 
 
-
-class AdjustedAuto(Enum):
-    """Creates enum auto-numbering object that begins at zero."""
-    def _generate_next_value_(name, start, count, last_values):
-        return count
-
-class Region(AdjustedAuto):
-    TLF = auto() # Top left front
-    TRF = auto() # Top right front
-    BRF = auto() # Bottom right front
-    BLF = auto() # Bottom left front
-    TLB = auto() # Top left back
-    TRB = auto() # Top right back
-    BRB = auto() # Bottomr right back
-    BLB = auto() # Bottom left back
+class BaseOctree:
+    point: Point
+    top_left_front: Point
+    bottom_right_back: Point
+    children: List[BaseOctree | None]
 
 
-class Octree:
+class Octree(BaseOctree):
     def __init__(self, p1: Point = None, p2: Point = None) -> None:
-        self.point: Point = None
-        self.top_left_front: Point = None
-        self.bottom_right_back: Point = None
-
+        self.point = None
+        self.top_left_front = None
+        self.bottom_right_back = None
 
         # List of child Octrees
-        self.children: List[Octree | None] = [None for _ in range(Region.BLB.value+1)]
+        self.children = [None for _ in range(Region.BLB.value+1)]
 
         if p1 is None and p2 is None:
             self.point = Point()
@@ -90,12 +81,18 @@ class Octree:
         return iter(self)
 
 
+    def tlf_brb(self) -> tuple:
+        """Convenience method for retrieving top_left_front and bottom_right_back.
+        """
+        return self.top_left_front, self.bottom_right_back
+
+
     def _init_insert(self, p1: Point, p2: Point):
         """Method to call if p1 and p2 present on class initialization.
         """
         if (p2.x < p1.x or p2.y < p1.y or p2.z < p1.z):
             return
-        
+
         self.point = None
 
         # Set exteme points.
@@ -111,7 +108,7 @@ class Octree:
         """Checking if point is valid compared to extemes of Octree."""
         # Alias exteme points.
         tlf = self.top_left_front
-        brb = self.bottom_right_back        
+        brb = self.bottom_right_back
         return (brb.x < pt.x < tlf.x) or (brb.y < pt.y < tlf.y) or (brb.z < pt.z < tlf.z)
 
 
@@ -119,10 +116,10 @@ class Octree:
         """Insert point into structure."""
         if self.invalid_point(p):
             return
-        
+
         # Set current region/position
         pos = self.current_position(p)
-        
+
         # Alias child tree
         child_tree = self.children[pos]
 
@@ -136,8 +133,7 @@ class Octree:
 
         else:
             # Alias exteme points.
-            tlf = self.top_left_front
-            brb = self.bottom_right_back
+            tlf, brb = self.tlf_brb()
 
             # Set child point for easier visual comprehension.
             child_pt = self.children[pos].point
@@ -147,12 +143,12 @@ class Octree:
             mid_x, mid_y, mid_z = self._get_mids()
 
             if pos == Region.TLF.value:
-                self.children[pos] = Octree(Point(tlf.x, tlf.y, tlf.z), 
+                self.children[pos] = Octree(Point(tlf.x, tlf.y, tlf.z),
                                             Point(mid_x, mid_y, mid_z),
                                             )
 
             elif pos == Region.TRF.value:
-                self.children[pos] = Octree(Point(mid_x+1, tlf.y, tlf.z), 
+                self.children[pos] = Octree(Point(mid_x+1, tlf.y, tlf.z),
                                             Point(brb.x,  mid_y,  mid_z)
                                             )
 
@@ -191,11 +187,11 @@ class Octree:
 
         print(f"Insert called.\nPosition of point {p}: {pos}")
 
-    
+
     def contains(self, p: Point):
         if self.invalid_point(p):
             return
-        
+
         print(f"Contains called.")
 
         pos = self.current_position(p)
@@ -203,7 +199,7 @@ class Octree:
 
         if child_tree.point is None:
             return self.children[pos].contains(p)
-        
+
         elif p.x == child_tree.point.x and p.y == child_tree.point.y and p.z == child_tree.point.z:
                 return 1
         else:
@@ -212,10 +208,9 @@ class Octree:
 
     def _get_mids(self) -> tuple:
         # Alias exteme points.
-        tlf = self.top_left_front
-        brb = self.bottom_right_back 
+        tlf, brb = self.tlf_brb()
 
-        # Bitshfit midpoints       
+        # Bitshfit midpoints
         _mid_x = (brb.x + tlf.x) >> 1
         _mid_y = (brb.y + tlf.y) >> 1
         _mid_z = (brb.z + tlf.z) >> 1
@@ -223,10 +218,14 @@ class Octree:
         return _mid_x, _mid_y, _mid_z
 
 
+    # https://www.python.org/dev/peps/pep-0636/
+    # https://benhoyt.com/writings/python-pattern-matching/
     def current_position(self, p: Point):
         # Get midpoints.
         mid_x, mid_y, mid_z = self._get_mids()
+
         _pos = -1
+
         if p.x <= mid_x:
             if p.y <= mid_y:
                 if p.z <= mid_z:
@@ -238,7 +237,7 @@ class Octree:
                     _pos = Region.BLF
                 else:
                     _pos = Region.BLB
-                
+
         else:
             if p.y <= mid_y:
                 if p.z <= mid_z:
@@ -252,3 +251,56 @@ class Octree:
                     _pos = Region.BRB
         # Return value of enum item.
         return _pos.value
+
+    #TODO: Intersection
+    # Mask? -> https://github.com/bradylowe/registerpc/blob/4e360682e82f0216924bef709c8f92d8456501ac/registerpc/pointcloud/Mask.py
+
+    # def current_position_case(self, p: Point):
+    #     """Using structural matching (Python 3.10+)
+    #     to mimick self.current_position() method.
+    #     """
+    #     # Get midpoints.
+    #     mid_x, mid_y, mid_z = self._get_mids()
+    #     _pos = -1
+    #     match p.x <= mid_x:
+    #         case True:
+    #             match p.y <= mid_y:
+    #                 case True:
+    #                     match p.z <= mid_z:
+    #                         case True:
+    #                             _pos = Region.TLF
+    #                         case _:
+    #                             _pos = Region.TLB
+    #                 case _:
+    #                     match p.z <= mid_z:
+    #                         case True:
+    #                             _pos = Region.BLF
+    #                         case _:
+    #                             _pos = Region.BLB
+    #         case _:
+    #             match p.y <= mid_y:
+    #                 case True:
+    #                     match p.z <= mid_z:
+    #                         case True:
+    #                             _pos = Region.TRF
+    #                         case _:
+    #                             _pos = Region.TRB
+    #                 case _:
+    #                     match p.z <= mid_z:
+    #                         case True:
+    #                             _pos = Region.BRF
+    #                         case _:
+    #                             _pos = Region.BRB
+    #     # Return value of enum item.
+    #     return _pos.value
+
+pt1 = Point(1, 1, 1)
+pt2 = Point(4, 4, 4)
+point1 = Point(3, 3, 3)
+point2 = Point(3, 3, 4)
+point3 = Point(3, 4, 4)
+
+o = Octree(pt1, pt2)
+o.insert(point1)
+o.insert(point2)
+o.contains(point1)
