@@ -5,9 +5,9 @@ from src._enum import Region
 from src._point import Point
 from src._types import List
 
-
-
 class Octree:
+    """Octree class.
+    """
     def __init__(self, p1: Point = None, p2: Point = None) -> None:
         self.point: Point = None
         self.top_left_front: Point = None
@@ -190,16 +190,3 @@ class Octree:
                     _pos = Region.BRB
         # Return value of enum item.
         return _pos.value
-
-
-pt1 = Point(1, 1, 1)
-pt2 = Point(4, 4, 4)
-point1 = Point(3, 3, 3)
-point2 = Point(3, 3, 4)
-point3 = Point(3, 4, 4)
-
-o = Octree(pt1, pt2)
-o.insert(point1)
-o.insert(point2)
-o.contains(point1)
-

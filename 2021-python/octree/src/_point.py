@@ -3,25 +3,21 @@ __all__ = [
     "Point",
     ]
 
-from __future__ import annotations
-
-# https://scialert.net/fulltext/?doi=itj.2007.1286.1289
-# https://iq.opengenus.org/octree/
-
 from ._types import Number
 
-
 class Point3d:
+    """3D point object."""
     x: Number
     y: Number
     z: Number
 
-
 class ExtraAttrs:
+    """Attributes object."""
     class_name: str
 
-
 class BasePoint(Point3d):
+    """Base point class. Implements required class methods (dunders).
+    """
     def __init__(self, x=-1, y=-1, z=-1) -> None:
         self.x = x
         self.y = y
