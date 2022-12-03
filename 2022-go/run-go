@@ -1,12 +1,10 @@
 #1/usr/bin/env bash
 set -ue
 
-WORKING_DIRECTORY=day01
-
+WORKING_DIRECTORY=day03
 SCRIPT_FILE_PATH="${WORKING_DIRECTORY}"/index.go
-# BIN_FILE_PATH="${WORKING_DIRECTORY}"/solution.exe
 BIN_FILE_PATH=solution.exe
-DATA_FILE_PATH="${WORKING_DIRECTORY}"/data.in
+DATA_FILE_PATH="${WORKING_DIRECTORY}"/data-sm.in
 # DATA_FILE_EXT=in
 # DATA_FILE_PATH="${DATA_FILE_PATH}.${DATA_FILE_EXT}"
 
@@ -18,6 +16,7 @@ clear-it () {
 
 
 build-it () {
+	clear-it
 	go build -o $BIN_FILE_PATH -ldflags='-w -s' $SCRIPT_FILE_PATH
 }
 
@@ -26,9 +25,12 @@ run-it () {
 	# Check if data file exits and run script with data.
 	# [[ -f ./$DATA_FILE_PATH ]] && ./$BIN_FILE_PATH < <(cat ./$DATA_FILE_PATH) || ./$BIN_FILE_PATH
 	# [[ -f ./$DATA_FILE_PATH ]] && cat ./$DATA_FILE_PATH | ./$BIN_FILE_PATH || ./$BIN_FILE_PATH
-	./$SCRIPT_FILE_PATH
-	go run 
+	# ./$SCRIPT_FILE_PATH
+	# go run ./"${SCRIPT_FILE_PATH}" "${DATA_FILE_PATH}"
+	./"${BIN_FILE_PATH}" "${DATA_FILE_PATH}"
 }
+
+# run-it
 
 build-it && run-it
 # build-it && run-it & clear-it
