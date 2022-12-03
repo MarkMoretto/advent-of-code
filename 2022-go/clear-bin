@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -ue
+
+# Bash script to remove binary executable.
+
+# Executable file path relative to current directory.
+BIN_FILE_PATH=solution.exe
+
+clear-it () {
+	# Remove old executable.
+	[[ -x $BIN_FILE_PATH ]] && rm $BIN_FILE_PATH
+}
+
+clear-it
