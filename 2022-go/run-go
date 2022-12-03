@@ -1,36 +1,38 @@
-#1/usr/bin/env bash
+#!/usr/bin/env bash
 set -ue
 
+# Bash script to build and run Go solutions.
+
+# Directory/module to process, relative to current directory.
 WORKING_DIRECTORY=day03
+
+# Default paths to main solution script and resulting binary executable.
 SCRIPT_FILE_PATH="${WORKING_DIRECTORY}"/index.go
 BIN_FILE_PATH=solution.exe
-DATA_FILE_PATH="${WORKING_DIRECTORY}"/data-sm.in
-# DATA_FILE_EXT=in
-# DATA_FILE_PATH="${DATA_FILE_PATH}.${DATA_FILE_EXT}"
+
+# Uncomment if using smaller sample data file.
+# DATA_FILE_PATH="${WORKING_DIRECTORY}"/data-sm.in
+
+# Comment out if using smaller sample data file (above).
+DATA_FILE_PATH="${WORKING_DIRECTORY}"/data.in
 
 
 clear-it () {
-	# Remove old executable(s).
+	# Remove old executable.
 	[[ -x $BIN_FILE_PATH ]] && rm $BIN_FILE_PATH
 }
 
 
 build-it () {
+	# Build solution with minor optimizations.
 	clear-it
 	go build -o $BIN_FILE_PATH -ldflags='-w -s' $SCRIPT_FILE_PATH
 }
 
 
 run-it () {
-	# Check if data file exits and run script with data.
-	# [[ -f ./$DATA_FILE_PATH ]] && ./$BIN_FILE_PATH < <(cat ./$DATA_FILE_PATH) || ./$BIN_FILE_PATH
-	# [[ -f ./$DATA_FILE_PATH ]] && cat ./$DATA_FILE_PATH | ./$BIN_FILE_PATH || ./$BIN_FILE_PATH
-	# ./$SCRIPT_FILE_PATH
-	# go run ./"${SCRIPT_FILE_PATH}" "${DATA_FILE_PATH}"
+	# Run compiled executable with path to data file as sole argument.
 	./"${BIN_FILE_PATH}" "${DATA_FILE_PATH}"
 }
 
-# run-it
-
 build-it && run-it
-# build-it && run-it & clear-it
