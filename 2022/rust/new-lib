@@ -1,0 +1,28 @@
+#!/bin/bash
+set -e
+#set -u
+
+# Create new local library
+
+# Example CLI -
+#    $ ./new-lib day01
+
+# Rust/Cargo Workspaces -
+# See: https://doc.rust-lang.org/book/ch14-03-cargo-workspaces.html
+# See: https://doc.rust-lang.org/cargo/reference/workspaces.html
+
+# Bash conditions -
+# See: https://linuxhandbook.com/if-else-bash#test-conditions-in-bash
+
+
+# TOML array example. Single quotes make it easier to read and write.
+# $ cargo --config 'build.rustdocflags = ["--html-in-header", "header.html"]' …
+
+if [ ! -z $1 ]; then
+	LIB_NAME="$1" && \
+	cargo new "${LIB_NAME}" --lib && \
+	mkdir -p -m 744 "${LIB_NAME}"/data && \
+	touch "${LIB_NAME}"/data/data.in "${LIB_NAME}"/data/data-sm.in
+else
+	echo "Please enter name of library to create!"
+fi
