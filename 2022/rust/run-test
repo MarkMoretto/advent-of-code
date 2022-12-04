@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -eu
+
+# Run test cases for solutions, if present.
+# See: https://doc.rust-lang.org/book/ch14-03-cargo-workspaces.html
+
+cargo test

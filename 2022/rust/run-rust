@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -eu
+
+# Build and run Rust solutions
+# See: https://doc.rust-lang.org/book/ch14-03-cargo-workspaces.html
+
+
+PACKAGE_NAME=solution
+
+cargo build && cargo run -p $PACKAGE_NAME
