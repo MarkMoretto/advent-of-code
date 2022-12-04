@@ -24,7 +24,7 @@ fn main() -> std::io::Result<()> {
 fn part1(brdr: BufReader<File>) -> () {
 	let mut mx: i32 = -1;
 	let mut sub_tot: i32 = 0;
-	
+
 	for line in brdr.lines() {
 		let curr_line = line.unwrap();
 		if curr_line.len() == 0 {
@@ -51,7 +51,7 @@ fn part2(brdr: BufReader<File>) -> () {
 	// of top three elves.
 	let mut sub_tot: i32 = 0;
 	let mut final_calories: i32= 0;
-	
+
 	for line in brdr.lines() {
 		let curr_line = line.unwrap();
 		if curr_line.len() == 0 {
@@ -72,7 +72,7 @@ fn part2(brdr: BufReader<File>) -> () {
 	// Get top three results.
 	let top_three = &elves[0..3];
 	for elf in top_three {
-		final_calories += elf;	
+		final_calories += elf;
 	}
 	println!("{final_calories:?}");
 }
