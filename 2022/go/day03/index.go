@@ -4,9 +4,13 @@ package main
 
 import (
 	"bufio"
+<<<<<<< HEAD
 	"bytes"
 	"fmt"
 	"io"
+=======
+	"fmt"
+>>>>>>> 4048b51 (reorganizing folder structure.)
 	"log"
 	"os"
 )
@@ -53,7 +57,11 @@ func part1(f *os.File) int {
 	for scanner.Scan() {
 		txt := scanner.Text()
 		slen := len(txt)
+<<<<<<< HEAD
 		
+=======
+
+>>>>>>> 4048b51 (reorganizing folder structure.)
 		// Split text in half
 		h1, h2 := txt[:slen/2], txt[slen/2:]
 
@@ -74,7 +82,10 @@ func part1(f *os.File) int {
 	return tot
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4048b51 (reorganizing folder structure.)
 // Part 2 solution
 
 const ElvesPerGroup = 3
@@ -193,6 +204,72 @@ func uniqueChars(s string) []rune {
 	return outSlice
 }
 
+<<<<<<< HEAD
+=======
+// func allUniqueChars(strs ...string) []rune {
+// 	var outs []rune
+// 	var m map[rune]bool
+// 	m = map[rune]bool{}
+// 	for _, str := range strs {
+// 		for _, r := range str {
+// 			if _, ok := m[r]; !ok {
+// 				m[r] = true
+// 				outs = append(outs, r)
+// 			}
+// 		}
+// 	}
+// 	return outs
+// }
+
+// Handle multiple strings as parameter.
+// func manyCmmonChars(strs ...string) []rune {
+// 	out := make([]rune, 0, 1e5)
+// 	nStrs := len(strs)
+// 	if nStrs <= 0 {
+// 		return nil
+// 	}
+
+// 	fMap := make(map[rune]int, nStrs)
+// 	for _, str := range strs {
+// 		for _, el := range str {
+// 			if _, ok := fMap[el]; ok {
+// 				out = append(out, el)
+// 			}
+// 		}
+// 	}
+
+// 	return out
+// }
+
+// Count lines in file.
+// func lineCounter(f *os.File) (int, error) {
+// 	var buffr, lineSep []byte
+// 	var cnt int
+// 	const KB int = int(1<<10)
+
+// 	lineSep = []byte("\n") // []byte{'\n'}
+// 	buffr = make([]byte, 32*KB)
+
+// 	for {
+// 		idx, err := f.Read(buffr)
+// 		switch {
+// 		case err == io.EOF:
+// 			return cnt, nil
+// 		case err != nil:
+// 			return cnt, err
+// 		}
+// 		cnt = cnt + bytes.Count(buffr[:idx], lineSep)
+// 	}
+// }
+
+// View map object.
+func viewMap(m map[rune]int) {
+	for k, v := range m {
+		printf("%s: %d\n", string(k), v)
+	}	
+}
+
+>>>>>>> 4048b51 (reorganizing folder structure.)
 var scanner *bufio.Scanner
 var reader *bufio.Reader = bufio.NewReader(os.Stdin)
 var writer *bufio.Writer = bufio.NewWriter(os.Stdout)

@@ -12,11 +12,29 @@ import (
 
 func main() {
 	defer writer.Flush()
+<<<<<<< HEAD
 	var txt string
 	var subSum, tot int
 	var calories []int
 
 	f, err := os.Open("day01/data.in")
+=======
+	var (
+		f *os.File
+		calories []int
+		dataPath, txt string
+		subSum, tot int
+		err error
+	)
+
+	// Get data path.
+	if len(os.Args) > 1 {
+		dataPath = os.Args[1]
+	}
+
+	// Open file and handle related error, if required.
+	f, err = os.Open(dataPath)
+>>>>>>> 4048b51 (reorganizing folder structure.)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -88,4 +106,8 @@ func MaxInt(x, y int) int {
 var reader *bufio.Reader = bufio.NewReader(os.Stdin)
 var writer *bufio.Writer = bufio.NewWriter(os.Stdout)
 func printf(f string, a ...interface{}) { fmt.Fprintf(writer, f, a...) }
+<<<<<<< HEAD
 func scanws(a ...interface{}) { fmt.Fscan(reader, a...) }
+=======
+func scanws(a ...interface{}) { fmt.Fscan(reader, a...) }
+>>>>>>> 4048b51 (reorganizing folder structure.)
