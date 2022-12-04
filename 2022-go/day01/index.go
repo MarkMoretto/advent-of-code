@@ -1,5 +1,7 @@
 package main
 
+// https://adventofcode.com/2022/day/1
+
 import (
 	"bufio"
 	"fmt"
@@ -10,11 +12,21 @@ import (
 
 func main() {
 	defer writer.Flush()
-	var txt string
-	var subSum, tot int
-	var calories []int
+	var (
+		f *os.File
+		calories []int
+		dataPath, txt string
+		subSum, tot int
+		err error
+	)
 
-	f, err := os.Open("day01/data.in")
+	// Get data path.
+	if len(os.Args) > 1 {
+		dataPath = os.Args[1]
+	}
+
+	// Open file and handle related error, if required.
+	f, err = os.Open(dataPath)
 	if err != nil {
 		log.Fatal(err)
 	}
