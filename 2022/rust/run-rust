@@ -5,6 +5,6 @@ set -eu
 # See: https://doc.rust-lang.org/book/ch14-03-cargo-workspaces.html
 
 
-PACKAGE_NAME=solution
+PACKAGE_NAME=day01
 
 cargo build && cargo run -p $PACKAGE_NAME
