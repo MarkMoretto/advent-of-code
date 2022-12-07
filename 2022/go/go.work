@@ -3,8 +3,8 @@ go 1.19
 use (
 	./day01
 	./day03
-<<<<<<< HEAD
-=======
 	./day04
->>>>>>> 4048b51 (reorganizing folder structure.)
+	./day05
+	./day06
+	./day07
 )

@@ -1,20 +1,20 @@
 #!/usr/bin/env bash
-set -ue
+set -e
 
 # Bash script to build and run Go solutions.
 
 # Directory/module to process, relative to current directory.
-WORKING_DIRECTORY=day04
+WORKING_DIRECTORY=day06
 
 # Default paths to main solution script and resulting binary executable.
-SCRIPT_FILE_PATH="${WORKING_DIRECTORY}"/index.go
+# SCRIPT_FILE_PATH="${WORKING_DIRECTORY}"/index.go
 BIN_FILE_PATH=solution.exe
 
 # Uncomment if using smaller sample data file.
-# DATA_FILE_PATH="${WORKING_DIRECTORY}"/data-sm.in
+DATA_FILE_PATH="${WORKING_DIRECTORY}"/data-sm.in
 
 # Comment out if using smaller sample data file (above).
-DATA_FILE_PATH="${WORKING_DIRECTORY}"/data.in
+# DATA_FILE_PATH="${WORKING_DIRECTORY}"/data.in
 
 
 clear-it () {
@@ -35,4 +35,7 @@ run-it () {
 	./"${BIN_FILE_PATH}" "${DATA_FILE_PATH}"
 }
 
-build-it && run-it
+# build-it && run-it
+
+
+go run $SCRIPT_FILE_PATH $DATA_FILE_PATH
