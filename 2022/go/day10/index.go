@@ -1,6 +1,6 @@
 package main
 
-// https://adventofcode.com/2022/day/7
+// https://adventofcode.com/2022/day/10
 
 import (
 	"bufio"
