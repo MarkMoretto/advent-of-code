@@ -1,6 +1,8 @@
 use std::io::{self, BufRead};
 use std::fs::File;
 use std::path::Path;
+use std::env;
+use std::fs;
 
 // Read file line-by-line.
 // Returns Reader Iterator for lines of file.
@@ -12,6 +14,14 @@ where Q: AsRef<Path>, {
 	Ok(io::BufReader::new(file).lines())
 }
 
+
+// https://doc.rust-lang.org/std/fs/fn.read_to_string.html
+#[allow(dead_code)]
+pub fn read_file(filepath: &str) -> String {
+	let cwd = env::current_dir().unwrap();
+	let outf = fs::read_to_string(filepath);
+	outf.expect("Error reading file.");
+}
 
 
 // -- Demo section
