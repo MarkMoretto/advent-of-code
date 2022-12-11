@@ -1,0 +1,16 @@
+#!/bin/bash
+set -e
+
+PRIOR_FOLDER=day5
+FILE_PATH="${PRIOR_FOLDER}"/go.mod
+
+# Get old go.mod header
+read -r -a modarr <<< "$(cat ${FILE_PATH} | head -n1)"
+# Set to new variable
+OLD_GO_MOD=${modarr[1]}
+
+# Get day number
+i=$(sed 's/day//'<<<$PRIOR_FOLDER)
+i=$((i+1))
+printf -v NEW_DAY "%02d" $i
+echo $NEW_DAY

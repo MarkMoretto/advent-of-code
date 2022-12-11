@@ -13,9 +13,9 @@ import (
 func main() {
 	defer writer.Flush()
 	var (
-		f        *os.File
+		f *os.File
 		dataPath string
-		err      error
+		err error
 	)
 
 	// Get data path.
@@ -31,14 +31,21 @@ func main() {
 
 	// Run solution.
 	solve(f)
+
+	return
 }
 
 const (
-	MaxAnimals   = 10
-	MatchPattern = `\d+`
-	Part1Rounds = 20
-	Part2Rounds = 10_000
+	MaxCapacity = 1e3
+	Width = 40
+	Height = 6
 )
+
+type Register int
+type Registers []Register
+
+func (r Register) ToInt() int { return int(r) }
+func (r Registers) Len() int { return len(r) }
 
 
 // Main solver function.
@@ -46,276 +53,87 @@ func solve(f *os.File) {
 	defer f.Close()
 
 	var (
-		monkies   []*Monkey
-		monk      *Monkey
-		allInspections []int
-		line      string
-		nRounds   int
-		worryItem int
-		modDivisor int
-		isPart1 bool
+		parts []string
+		registers Registers
+		line string
+		cmd string
+		amt Register
+		x Register
 	)
 
-	monkies = make([]*Monkey, 0, MaxAnimals)
-	allInspections = make([]int, 0, MaxAnimals)
-
+	registers = make(Registers, 0, MaxCapacity)
+	registers = append(registers, 0)
+	registers = append(registers, 1)
+	x = 1
 	scanner = bufio.NewScanner(f)
 	for scanner.Scan() {
-
 		line = scanner.Text()
+		parts = strings.Fields(line)
 
-		switch {
-		case len(strings.TrimSpace(line)) == 0:
-			monkies = append(monkies, monk)
-		case strings.Contains(line, "Monkey"):
-			monk = newMonkey()
-		default:
-			updateMonkey(line, monk)
+		cmd = parts[0]
+
+		if cmd[0] == 'n' {
+			registers = append(registers, x)
+			continue
+		}
+
+		amt = strToRegister(parts[1])
+		// printf("amt: %d Reg len: %d\n", amt, registers.Len())
+		// printf("amt: %d ", amt)
+		x = registers[registers.Len()-1]
+		// printf("x1: %d ", x)
+		registers = append(registers, x)
+		x += amt
+		// printf("x2: %d\n", x)
+		registers = append(registers, x)
+		// printf("x: %d\n", x)
+	}
+
+	for ptr := range registers {
+		printf("%d %d\n", ptr, registers[ptr])
+		// if ptr%20==0 {
+		// 	printf("%d\n", registers[ptr])
+		// } else {
+		// 	printf("%d\n", registers[ptr])
+		// }
+	}
+
+	// Part 1
+	part1(registers)
+}
+
+func part1(rz Registers) {
+	var p Register
+	var totSignalStrength Register
+	for p = 0; p.ToInt() < rz.Len(); p++ {
+		if p >= 20 && (p-20)%40==0 {
+			totSignalStrength += (p*rz[p])
 		}
 	}
-
-	if err := scanner.Err(); err != nil {
-		fmt.Fprintln(os.Stderr, "reading standard input:", err)
-	}
-
-	monkies = append(monkies, monk)
-
-	isPart1 = false
-
-	// LCM
-	modDivisor = 1
-	for _, m := range monkies {
-		// lcmDivisor = LCM(lcmDivisor, m.testDiv)
-		modDivisor *= m.testDiv
-		// printf("%d %d\n", modDivisor, m.testDiv)
-	}
-
-	
-
-	for nRounds < Part2Rounds {
-		for i := range monkies {
-			cm := monkies[i]
-			for cm.hasItems() {
-				worryItem, cm.items = cm.items[0], cm.items[1:]
-				worryLvl := cm.inspection(worryItem) % modDivisor
-				cm.nInspections++
-
-				if isPart1 {
-					worryLvl = postInspection(worryLvl)	
-				}
-
-				if worryLvl%cm.testDiv == 0 {
-					monkies[cm.tossTrue].items = append(monkies[cm.tossTrue].items, worryLvl)
-				} else {
-					monkies[cm.tossFalse].items = append(monkies[cm.tossFalse].items, worryLvl)
-				}
-
-			}
-		}
-		nRounds++
-	}
-
-	for _, m := range monkies {
-		allInspections = append(allInspections, m.nInspections)
-	}
-
-	// Sort and print product of top two results.
-	HeapSort(allInspections, HeapifyDesc[int])
-	printf("%d\n", allInspections[0] * allInspections[1])
-
+	printf("%d\n", totSignalStrength)
 }
 
-
-// Function type signature.
-type FnInspection func(int) int
-
-
-// Main monkey struct.
-type Monkey struct {
-	items        []int
-	inspection   FnInspection
-	testDiv      int
-	tossTrue     int
-	tossFalse    int
-	nInspections int
-}
-
-// Moneky stringer format.
-var fstring string = `items: %v
-test: %d
-true: %d
-false: %d
-insp. ct: %d
-`
-
-// Stringer method.
-func (m *Monkey) String() string {
-	return fmt.Sprintf(fstring, m.items, m.testDiv, m.tossTrue, m.tossFalse, m.nInspections)
-}
-
-// Create new monkey instance.
-func newMonkey() *Monkey {
-	return &Monkey{
-		items: make([]int, 0, 1e2),
+func strToRegister(s string) Register {
+	var isNeg bool
+	if s[0] == '-' {
+		isNeg = true
 	}
-}
-
-// 
-func postInspection(item int) int {
-	return item / 3
-}
-
-// Check if items list empty.
-func (m *Monkey) hasItems() bool { return len(m.items) > 0 }
-
-// Update current monkey based on string contents.
-func updateMonkey(s string, m *Monkey) {
-	var parts []string
-	var p1, p2 string
-	parts = strings.Split(s, ":")
-	if len(parts) != 2 {
-		return
+	s = s[1:]
+	n := strToInt(s)
+	if isNeg {
+		n = -n
 	}
-
-	p1, p2 = strings.TrimSpace(parts[0]), strings.TrimSpace(parts[1])
-
-	switch {
-	case strings.Contains(p1, "Starting items"):
-		tmp := splitInts(p2)
-		(*m).items = append((*m).items, tmp...)
-
-	case strings.Contains(p1, "Operation"):
-		p2 = strings.Replace(p2, "new = old ", "", -1)
-		tmp := strings.Split(p2, " ")
-		oper, d := string(tmp[0]), string(tmp[1])
-		(*m).inspection = setInspection(oper, d)
-
-	case strings.Contains(p1, "Test"):
-		p2 = strings.Replace(p2, "divisible by ", "", -1)
-		(*m).testDiv = strToInt(strings.TrimSpace(p2))
-
-	case strings.Contains(p1, "If true"):
-		p2 = strings.Replace(p2, "throw to monkey ", "", -1)
-		(*m).tossTrue = strToInt(strings.TrimSpace(p2))
-
-	case strings.Contains(p1, "If false"):
-		p2 = strings.Replace(p2, "throw to monkey ", "", -1)
-		(*m).tossFalse = strToInt(strings.TrimSpace(p2))
-	}
-
-}
-
-// Split string into integer slice.
-func splitInts(intStr string) []int {
-	var out []int
-	for _, el := range strings.Split(intStr, ",") {
-		tmp := strings.TrimSpace(el)
-		out = append(out, strToInt(tmp))
-	}
-	return out
-}
-
-// Operator closure.
-func setInspection(op, delta string) func(int) int {
-	var f func(int, int) int
-	switch op {
-	case "+":
-		f = func(a, b int) int { return a + b }
-	case "-":
-		f = func(a, b int) int { return a - b }
-	case "*":
-		f = func(a, b int) int { return a * b }
-	case "/":
-		f = func(a, b int) int { return a / b }
-	}
-	return func(old int) int {
-		if delta == "old" {
-			return f(old, old)
-		} else {
-			return f(old, strToInt(delta))
-		}
-	}
+	return Register(n)
 }
 
 func strToInt(s string) int {
 	var out int
 	for _, el := range s {
-		out = out*10 + int(el-'0')
+		out = out * 10 + int(el - '0')
 	}
 	return out
 }
 
-// ~~~ Sorting method ~~~
-
-// Integer number generic.
-type Number interface {
-	~int
-}
-
-// Heapify type (signature).
-type HeapifyMethod[X Number]func([]X, X, X)
-
-func HeapSort[X Number](numSlice []X, fn ...HeapifyMethod[X]) {
-	var nElements X
-	var heapFunc HeapifyMethod[X]
-
-	switch len(fn) {
-	case 1:
-		heapFunc = fn[0]
-	case 0:
-		heapFunc = HeapifyAsc[X]
-	default:
-		return
-	}
-
-	nElements = X(len(numSlice))
-	for i := (nElements / 2) - 1; i >= 0; i-- {
-		heapFunc(numSlice, nElements, i)
-	}
-	for j := nElements - 1; j >= 0; j-- {
-		numSlice[0], numSlice[j] = numSlice[j], numSlice[0]
-		heapFunc(numSlice, j, 0)
-	}
-}
-
-// Sort ascending.
-func HeapifyAsc[X Number](arr []X, n, i X) {
-	largest, left, right := i, 2*i+1, 2*i+2
-
-	if left < n && arr[left] > arr[largest] {
-		largest = left
-	}
-
-	if right < n && arr[right] > arr[largest] {
-		largest = right
-	}
-
-	if largest != i {
-		arr[i], arr[largest] = arr[largest], arr[i]
-		HeapifyAsc(arr, n, largest)
-	}
-}
-
-// Sort descending.
-func HeapifyDesc[X Number](a []X, n, i X) {
-
-	smallest, left, right := i, 2*i+1, 2*i+2
-
-	if left < n && a[left] < a[smallest] {
-		smallest = left
-	}
-
-	if right < n && a[right] < a[smallest] {
-		smallest = right
-	}
-
-	if smallest != i {
-		a[i], a[smallest] = a[smallest], a[i]
-		HeapifyDesc(a, n, smallest)
-	}
-}
-
-// IO
 var scanner *bufio.Scanner
 var reader *bufio.Reader = bufio.NewReader(os.Stdin)
 var writer *bufio.Writer = bufio.NewWriter(os.Stdout)
