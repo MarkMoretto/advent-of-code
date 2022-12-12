@@ -11,10 +11,10 @@ SCRIPT_FILE_PATH="${WORKING_DIRECTORY}"/index.go
 BIN_FILE_PATH=solution.exe
 
 # Uncomment if using smaller sample data file.
-DATA_FILE_PATH="${WORKING_DIRECTORY}"/data-sm.in
+# DATA_FILE_PATH="${WORKING_DIRECTORY}"/data-sm.in
 
 # Comment out if using smaller sample data file (above).
-# DATA_FILE_PATH="${WORKING_DIRECTORY}"/data.in
+DATA_FILE_PATH="${WORKING_DIRECTORY}"/data.in
 
 
 clear-it () {
