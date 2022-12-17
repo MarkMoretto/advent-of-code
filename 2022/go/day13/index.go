@@ -11,6 +11,7 @@ import (
 
 func main() {
 	defer writer.Flush()
+
 	var (
 		f *os.File
 		dataPath string
@@ -28,7 +29,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	
 	// part 1
 	// res = part1(f)
 	// printf("%d\n", res)
@@ -44,7 +45,7 @@ func part1(f *os.File) int {
 	defer f.Close()
 	var tot int
 	var err error
-
+	
 	// Scan lines in file.
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
@@ -67,7 +68,7 @@ func part1(f *os.File) int {
 	if err = scanner.Err(); err != nil {
         log.Fatal(err)
     }
-
+	
 	return tot
 }
 
@@ -117,7 +118,7 @@ func part2(f *os.File) int {
 					// add character to slice.
 					if rFreq[r] == ElvesPerGroup {
 						matches = append(matches, r)
-					}
+					}					
 				}
 			}
 
@@ -136,7 +137,7 @@ func part2(f *os.File) int {
 	if err = scanner.Err(); err != nil {
         log.Fatal(err)
     }
-
+		
 	return tot
 }
 
@@ -249,7 +250,7 @@ func uniqueChars(s string) []rune {
 func viewMap(m map[rune]int) {
 	for k, v := range m {
 		printf("%s: %d\n", string(k), v)
-	}
+	}	
 }
 
 var scanner *bufio.Scanner
