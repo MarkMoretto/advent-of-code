@@ -1,0 +1,145 @@
+#pragma GCC optimize("O3,unroll-loops")
+#pragma GCC target("avx,avx2,sse,sse2,sse3,sse4,popcnt")
+
+// Inspo: https://codeforces.com/contest/1517/submission/114124079
+// https://codeforces.com/contest/1703/submission/163805727
+// https://codeforces.com/contest/1550/submission/132417058
+// #include <bits/stdc++.h>
+// #include <iostream>
+// #include <string>
+// #include <vector>
+// #include <array>
+#include<cstdio>
+#include<cstdlib>
+#include<cstring>
+#include<cmath>
+#include<algorithm>
+#include<string>
+#include<iostream>
+#include<sstream>
+#include<set>
+#include<map>
+#include<queue>
+#include<bitset>
+#include<vector>
+#include<iomanip>
+#include<limits.h>
+#include<assert.h>
+
+// Newline vs. std::endl;
+using namespace std;
+
+const char nl='\n';
+const char ws=' ';
+const int mod = 998244353, N = 300005, logN = 20, M = 6e6;
+
+using LL = long long;
+using LDB = long double;
+using DB = double;
+using S = string;
+
+using PII = pair<int, int>;
+using PLL = pair<LL, LL>;
+using PDB = pair<DB, DB>;
+using PIS = pair<int, S>;
+using PSS = pair<S, S>;
+
+using IVEC =  vector<int>;
+using BVEC =  vector<bool>;
+using LLVEC = vector<LL>;
+using DBVEC = vector<DB>;
+using SVEC =  vector<S>;
+
+using PIIV = vector<PII>;
+using PLLV = vector<PLL>;
+using PDBV = vector<PDB>;
+
+#define MP make_pair
+#define PB push_back
+
+#define RDSTR(X) scanf("%s", (X))
+#define GET_POS(c,x) (lower_bound(c.begin(),c.end(),x)-c.begin())
+#define CASET int ___T; cin >> ___T; for(int cs=1;cs<=___T;cs++)
+
+// Sorting
+#define ALL(x) x.begin(), x.end()
+#define RALL(x) x.rbegin(), x.rend()
+#define RSORT(x) sort(x.rbegin(), x.rend())
+#define SORT_UNIQUE(c) (sort(c.begin(),c.end()), c.resize(distance(c.begin(),unique(c.begin(),c.end()))))
+
+// Iterations
+#define REP(I, N) for (int I = 0; I < (N); ++I)
+#define REPX(I, S, E) for (int I = (S); I < (E); ++I)
+
+#define REVP(I, N) for (int I = (N-1); I > -1; --I)
+#define REVPX(I, S, E) for (int I = (S-1); I > (E); --I)
+
+#define FOR(I, S, E) for (int I = (S); I <= (E); ++I)
+#define FORS(I, S) for (int I = 0; S[I]; ++I)
+
+#define REVS(I, N) for (int I = N; I > -1; --I)
+
+// Memory
+#define MS0(X) memset((X), 0, sizeof((X)))
+#define MS1(X) memset((X), -1, sizeof((X)))
+#define LEN(X) strlen(X)
+#define SZ(X) ((int)(X).size())
+#define SUM(x) std::accumulate(x.begin(), x.end(), 0LL)
+
+#define tcT template<class T
+#define tcTU tcT, class U tcT> using V = vector<T>; 
+tcT, size_t SZ> using AR = array<T,SZ>; 
+tcT> using PR = pair<T,T>;
+
+void abc() {cout << nl;}
+template <typename T, typename ...U> void abc(T a, U ...b) {
+    cout << a << ws, abc(b...);
+}
+template <typename T> void printv(T l, T r) {
+    for (; l != r; ++l) cout << *l << " \n"[l + 1 == r];
+}
+template <typename A, typename B> istream& operator >> (istream& o, pair<A, B> &a) {
+    return o >> a.X >> a.Y;
+}
+template <typename A, typename B> ostream& operator << (ostream& o, pair<A, B> a) {
+    return o << '(' << a.X << ", " << a.Y << ')';
+}
+template <typename T> ostream& operator << (ostream& o, vector<T> a) {
+    bool is = false;
+    if (a.empty()) return o << "{}";
+    for (T i : a) {o << (is ? ws : '{'), is = true, o << i;}
+    return o << '}';
+}
+template <typename T> struct vv : vector <vector <T>> {
+    vv(int n, int m, T v) : vector <vector <T>> (n, vector <T>(m, v)) {}
+    vv() {}
+};
+template <typename T> struct vvv : vector <vv <T>> {
+    vvv(int n, int m, int k, T v) : vector <vv <T>> (n, vv <T>(m, k, v)) {}
+    vvv() {}
+};
+
+// #ifdef FileIO
+// #define test(args...) abc("[" + string(#args) + "]", args)
+// #define PreRun freopen("input.txt", "r", stdin), freopen("output.txt", "w", stdout); 
+// #else
+// #define test(args...) void(0)
+// #define PreRun ios::sync_with_stdio(false); cin.tie(0)
+// #endif
+
+void solve();
+
+// Entrypoint.
+int main() {
+	// std::ios_base::sync_with_stdio(false);
+	// std::cin.tie(nullptr);
+	// cin.tie(NULL); cout.tie(NULL);
+	// PreRun;
+	int n; cin>>n;
+	while(n--) solve();	
+}
+
+// Driver
+void solve() {
+	// ...
+}
