@@ -14,4 +14,5 @@ use (
 	./day13
 	./day17
 	./day18
+	./day20
 )

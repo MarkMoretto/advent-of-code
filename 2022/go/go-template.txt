@@ -65,6 +65,25 @@ func strToInt(s string) int {
 	return out
 }
 
+// String to Integer w/ negatives.
+func strToAnyInt[S string, I int](s S) I {
+	const Ten = 10
+	var out I
+	var isNeg bool
+	if s[0] == '-' {
+		isNeg = true
+		s = s[1:]
+	}
+	
+	for _, el := range s {
+		out *= Ten
+		out += I(el - '0')
+	}
+	if isNeg {
+		out = -out
+	}
+	return out
+}
 
 var scanner *bufio.Scanner
 var reader *bufio.Reader = bufio.NewReader(os.Stdin)

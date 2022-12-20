@@ -43,13 +43,12 @@ func solve(f *os.File) {
 
 	var (
 		cubes Cubes
-		// bCubes BoolCubes
 		tmp *pos
+		maxPt *pos
 		line string
 		nPoints int
 	)
 	cubes = make(Cubes, 0, MaxCubes)
-	// bCubes = make(BoolCubes, MaxCubes)
 
 	scanner = bufio.NewScanner(f)
 	for scanner.Scan() {
@@ -58,21 +57,22 @@ func solve(f *os.File) {
 		cubes = append(cubes, tmp)
 	}
 
+	maxPt = MaxPoint(cubes)
 
+	// Part1
 	for i, pt1 := range cubes {
 		nPoints += 6
-		// printf("%d: %#v\n", i, pt1)
 		for _, d := range directions() {
 			tmp = pt1.IncrPoint(d)
 			for j, pt2 := range cubes {
 				if i != j && pt2.EqualTo(tmp) {
-					// printf("  %v\n", tmp)
 					nPoints--					
 				}
 			}
 		}
 	}
 	printf("%d\n", nPoints)
+	printf("%v\n", maxPt)
 }
 
 
@@ -81,7 +81,6 @@ type pos struct {
 }
 
 type Cubes []*pos
-type BoolCubes map[*pos]bool
 
 func newPos(txt string) *pos {
 	tmp := strings.Split(txt, ",")
@@ -110,6 +109,29 @@ func directions() []*pos {
 		{ 0,-1, 0},
 		{ 0, 0,-1},
 	}
+}
+
+func MaxPoint(cbz Cubes) *pos {
+	maxPt := &pos{-1, -1, -1}
+	for _, pt := range cbz {
+		locPt := pt
+		go func() {
+			if locPt.x > maxPt.x {
+				maxPt.x = locPt.x
+			}
+		}()
+		go func() {
+			if locPt.y > maxPt.y {
+				maxPt.y = locPt.y
+			}
+		}()
+		go func() {
+			if locPt.z > maxPt.z {
+				maxPt.z = locPt.z
+			}
+		}()				
+	}
+	return maxPt
 }
 
 
