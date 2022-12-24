@@ -9,6 +9,9 @@ read -r -a modarr <<< "$(cat ${FILE_PATH} | head -n1)"
 # Set to new variable
 OLD_GO_MOD=${modarr[1]}
 
+# Read with throwaways.
+# read -r _ txt <<< $(cat go.mod)
+
 # Get day number
 i=$(sed 's/day//'<<<$PRIOR_FOLDER)
 i=$((i+1))

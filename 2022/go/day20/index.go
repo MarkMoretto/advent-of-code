@@ -34,7 +34,7 @@ func main() {
 	return
 }
 
-const MaxLines = 5_000
+const MaxNumbers = 7
 
 // Main solver function.
 func solve(f *os.File) {
@@ -43,21 +43,63 @@ func solve(f *os.File) {
 	var (
 		line string
 		ints []int
+		worker []int
+		tmp int
 	)
-	ints = make([]int, 0, MaxLines)
-
+	ints = make([]int, 0, MaxNumbers)
 	scanner = bufio.NewScanner(f)
 
 	for scanner.Scan() {
 		line = scanner.Text()
-		ints = append(ints, strToAnyInt(line))
+		tmp = strToAnyInt(line)
+		ints = append(ints, tmp)
+		worker = append(worker, tmp)
+	}
 
-		printf("%s\n", line)
-
+	for i, v := range ints {
+		//TODO: Check sign
+		//TODO: Rotate worker.
+		printf("%d %d\n", i, v)
 	}
 
 }
 
+
+// func rotateCW(a []int, nPlaces int) []int {
+// 	for nPlaces > 0 {
+
+// 		nPlaces--
+// 	}
+// }
+
+func push(a []int, val int) []int {
+	a = append(a, val)
+	return a
+}
+
+func pop(a []int, val int) int {
+	var x int
+	var n int
+	n = len(a)
+	x, a = a[n-1], a[:n-1]
+	return x
+}
+
+func indexOf(a []int, val int) int {
+	for i := range a {
+		if a[i] == val {
+			return i
+		}
+	}
+	return -1
+}
+
+func insertAt(a []int, val, idx int) []int {
+	a = append(a, 0)
+	copy(a[idx+1:], a[idx:])
+	a[idx] = val
+	return a
+}
 
 func strToAnyInt[S string, I int](s S) I {
 	const Ten = 10

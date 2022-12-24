@@ -4,7 +4,7 @@ set -e
 # Bash script to build and run Go solutions.
 
 # Directory/module to process, relative to current directory.
-WORKING_DIRECTORY=day18
+WORKING_DIRECTORY=day22
 
 # Default paths to main solution script and resulting binary executable.
 SCRIPT_FILE_PATH="${WORKING_DIRECTORY}"/index.go
