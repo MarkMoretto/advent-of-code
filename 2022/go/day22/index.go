@@ -44,10 +44,10 @@ func solve(f *os.File) {
 		line string
 		cmdStr string
 		boardMap []string
-		maxWidth int
+		width, height int
 	)
 
-	maxWidth = -1
+	width = -1
 	boardMap = make([]string, 0, 1e3)
 	cmds = make([]*Command, 0, 1e6)
 
@@ -55,11 +55,12 @@ func solve(f *os.File) {
 
 	for scanner.Scan() {
 		line = scanner.Text()
+		height++
 		switch {
 		case strings.ContainsAny(line, ".#"):
 			boardMap = append(boardMap, line)
-			if len(line) > maxWidth {
-				maxWidth = len(line)
+			if len(line) > width {
+				width = len(line)
 			}
 		case strings.ContainsAny(line, "1234567890LRUD"):
 			cmdStr = line
@@ -67,6 +68,9 @@ func solve(f *os.File) {
 			continue
 		}
 	}
+	// For command line and blank line
+	height -= 2
+	printf("W: %d  H: %d\n", width, height)
 
 	// for i, row := range boardMap {
 	// 	printf("%d: (%d) => %s\n", i, len(row), row)
@@ -129,6 +133,11 @@ func getCommands(str string, outc *[]*Command) {
 
 func isChar(r byte) bool {
 	return 'A' <= r && r <= 'Z'
+}
+
+
+func calcFinalPassword(r, c, h int) int {
+	return 1_000*r + 4*c + h
 }
 
 // Conversion
