@@ -1,0 +1,18 @@
+#!/bin/bash
+set -e
+
+FOLDER_PATH="01"
+FILE_NAME="index.go"
+BIN_PATH="solution.exe"
+
+build-it() {
+    go build -ldflags="-s -w" -o "${BIN_PATH}" "${FOLDER_PATH}/${FILE_NAME}"
+    # [[ ! -x "${BIN_PATH}" ]] && chmod 755 "${BIN_PATH}"
+}
+
+run-it() {
+    # [[ -x $BIN_PATH ]] && ./"${BIN_PATH}" < <(cat data.in)
+    [[ -x $BIN_PATH ]] && ./"${BIN_PATH}"
+}
+
+build-it && run-it

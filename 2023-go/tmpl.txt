@@ -1,0 +1,254 @@
+
+
+// Notable references:
+// https://atcoder.jp/contests/abc327/submissions/47208732
+
+
+// --- Constants ---
+const (
+    INF = 1<<62 - 1
+    MOD = 1e9 + 7
+)
+
+// Merge sort
+
+// type MergeFunc func([]uint32, uint32, uint32, uint32)
+
+// func MergeSort(f MergeFunc) func(arr []uint32, l, r uint32) {
+// 	var ms func([]uint32, uint32, uint32)
+// 	return func(arr []uint32, l, r uint32) {
+// 		ms = func(x []uint32, y, z uint32) {
+// 			if l<r {
+// 				m := z + (z-y)/2
+// 				ms(x, y, m)
+// 				ms(x, m+1, z)
+// 				f(x, y, m, z)
+// 			}
+// 		}
+// 		ms(arr, l, r)
+// 	}
+// }
+
+func MergeSort(arr []uint32, l, r uint32) {
+	if l<r {
+		m := l + (r-l)/2
+		MergeSort(arr, l, m)
+		MergeSort(arr, m+1, r)
+		mergeAsc(arr, l, m, r)
+	}
+}
+
+
+func mergeAsc(a []uint32, l, m, r uint32) {
+	const Zero uint32 = 0
+	var lhs, rhs []uint32
+	var i, j, k, n1, n2 uint32
+
+	n1 = m-l+1
+	n2 = r-m
+
+	lhs, rhs = make([]uint32, 0, n1+1), make([]uint32, 0, n2+1)
+
+	for i = Zero; i<n1; i++ {
+		lhs = append(lhs, a[l+i])
+	}
+	for j = Zero; j<n2; j++ {
+		rhs = append(rhs, a[m+1+j])
+	}
+	i, j, k = 0, 0, l
+	for i < n1 && j < n2 {
+		switch lhs[i]<=rhs[j] {
+		case true:
+			a[k] = lhs[i]
+			i++
+		default:
+			a[k] = rhs[j]
+			j++
+		}
+		k++
+	}
+
+	// Append rest to end of each array.
+	for ; i < n1; i, k = i+1, k+1 {
+		a[k] = lhs[i]
+	}
+	for ; j < n2; j, k = j+1, k+1 {
+		a[k] = rhs[j]
+	}
+}
+
+
+func mergeDesc(a []uint32, l, m, r uint32) {
+	const Zero uint32 = 0
+	var lhs, rhs []uint32
+	var i, j, k, n1, n2 uint32
+
+	n1 = m - l + 1
+	n2 = r - m
+
+	lhs, rhs = make([]uint32, 0, n1+1), make([]uint32, 0, n2+1)
+
+	for i = Zero; i < n1; i++ {
+		lhs = append(lhs, a[l+i])
+	}
+	for j = Zero; j < n2; j++ {
+		rhs = append(rhs, a[m+1+j])
+	}
+	i, j, k = 0, 0, l
+	for i < n1 && j < n2 {
+		switch lhs[i] >= rhs[j] {
+		case true:
+			a[k] = lhs[i]
+			i++
+		default:
+			a[k] = rhs[j]
+			j++
+		}
+		k++
+	}
+	for ; j < n2; j, k = j+1, k+1 {
+		a[k] = rhs[j]
+	}
+	for ; i < n1; i, k = i+1, k+1 {
+		a[k] = lhs[i]
+	}
+}
+
+
+// --- Bit Ops ---
+
+// https://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetParallel
+func nBitsSet(num uint32) uint32 {
+	num = num - ((num >> 1) & 0x55555555)
+	num = (num & 0x33333333) + ((num >> 2) & 0x33333333)
+	num = (num + (num >> 4)) & 0x0F0F0F0F
+	return (num * 0x01010101) >> 24
+}
+
+
+
+// Get next value with n bits set
+// Note: requires "math/bits" import
+
+// func nextPerm(n uint) uint {
+// 	var t uint
+// 	t = n | (n-1)
+// 	return (t+1) | (((^t & -^t)-1)>>(bits.TrailingZeros(n)+1))
+// }
+
+// Slower, but no import
+func nextNumSameActiveBits(n Num) Num {
+	t := (n | (n - 1)) + 1
+	// rhs := ((((t & -t) / (n & -n)) >> 1) - 1)
+	return t | ((((t & -t) / (n & -n)) >> 1) - 1)
+}
+
+
+func Pow2(n Num) Num {
+	// or, 1<<n
+	var o Num
+	o = 1
+	for n > 0 {
+		o *= 2
+		n--
+	}
+	return o
+}
+
+func firstValueWithNBitsSet(val Num) Num {
+	return Pow2(val)-1
+}
+
+// Math funcs
+
+// Raise to power of 2
+func Pow2(n uint) uint {
+	var o uint
+	o = 1
+	for n > 0 {
+		o *= 2
+		n--
+	}
+	return o
+}
+
+// Powers of 10.
+func Pow10(v int) int {
+	if v <= 0{
+		return 1
+	}
+	return 10 * Pow10(v-1)
+}
+
+// Machine Epsilon
+// https://en.wikipedia.org/wiki/Machine_epsilon
+const (
+	Zero float64 = iota
+	One
+	Two
+)
+func MachineEps(v float64) float64 {
+	var eps, prev_eps float64
+	eps = float64(1)
+	for One-eps != One {
+		prev_eps = eps
+		eps = float64(eps)/ Two
+	}
+	return prev_eps
+}
+
+
+// ~~~ Graph ~~~
+const MaxN int = 1e3 + 1
+
+type AdjacencyMap map[int]map[int]uint8
+
+// Depth-first search
+func Dfs(adjM AdjacencyMap, startVertex int) []int {
+	visitMap := make(map[int]bool, MaxN)
+	outs := make([]int, 0, MaxN)
+	var dfs func(int)
+	dfs = func(person int) {
+		visitMap[person] = true
+		outs = append(outs, person)
+		for neighbor := range adjM[person] {
+			if _, ok := visitMap[neighbor]; !ok {
+				dfs(neighbor)
+			}
+		}
+	}
+	dfs(startVertex)
+	// for k := range visitMap {
+	// 	outs = append(outs, k)
+	// }
+	return outs
+}
+
+
+// --- Checks w/ Predicates ---
+
+type BoolIntFunc func(int) bool
+
+func every(items []int, fn BoolIntFunc) bool {
+	for _, el := range items {
+		if !fn(el) {
+			return false
+		}
+	}
+	return true
+}
+
+
+// --- Strings ---
+
+// Right-trim a string.
+func rtrim(str string) string {
+	i := len(str)-1
+	for i > -1 {
+		if str[i] != ' ' {
+			break
+		}
+		i--
+	}
+	return str[:i+1]
+}
