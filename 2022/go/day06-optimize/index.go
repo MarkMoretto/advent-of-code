@@ -16,33 +16,74 @@ import (
 func main() {
 	defer writer.Flush()
 	var (
+		linesCh  chan string
+		// chunksCh chan string
+		// okCh chan bool
 		filePath string
-		line     string
+		// line     string
 		err      error
 	)
 
 	// Ingest command line args.
 	filePath, err = checkArgs(os.Args)
-	if err != nil {
-		log.Fatal(err)
-	}
+	checkErr(err)
 
 	// Attempt to open file.
 	f, err := os.Open(filePath)
-	if err != nil {
-		log.Fatal(err)
-	}
+	checkErr(err)
+	defer f.Close()
 
-	// Scan each line of file and process as required.
-	scanner = bufio.NewScanner(f)
-	for scanner.Scan() {
-		line = scanner.Text()
-		solution(line, len(line))
-	}
+	linesCh = make(chan string)
+	// okCh = make(chan bool)
+	go FutureScans(f, linesCh)
+
+
 }
 
 // Change this from 4 to 14 for parts 1 and 2.
-const StepSize = 14
+const StepSize = 4
+
+
+func FutureScans(fileObj *os.File, outCh chan<- string) {
+	scanner = bufio.NewScanner(fileObj)
+	for scanner.Scan() {
+		outCh <- scanner.Text()
+	}
+	return
+}
+
+func chunks(data string, size int, chunkSize int, outCh chan<- string) {
+	defer close(outCh)
+	for i := 0; i < size-chunkSize+1; i++ {
+		outCh <- string(data[i : i+chunkSize])
+	}
+}
+
+func allDistinct(inCh <-chan string, outCh chan<- bool) {
+	var cnt int
+	var m map[rune]struct{}
+	for {
+		m = make(map[rune]struct{}, StepSize)
+		cnt = 0
+		s := <- inCh
+		for _, el := range s {
+			if _, ok := m[el]; !ok {
+				cnt++
+			}
+		}
+		outCh <- cnt == StepSize
+	}
+}
+
+func checkErr(e error) {
+	if e != nil {
+		log.Fatal(e)
+	}
+}
+
+
+// Change this from 4 to 14 for parts 1 and 2.
+// const StepSize = 14
 
 func solution(s string, sz int) {
 	var i int
