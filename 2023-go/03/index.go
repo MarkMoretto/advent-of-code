@@ -1,35 +1,33 @@
 package main
 
+// https://adventofcode.com/2023/day/3
+
 import (
 	"bufio"
 	"fmt"
 	"os"
-    _"regexp"
-	_"strings"
-    _"unicode"
+	"regexp"
+	"strings"
+	_ "strings"
+	_ "unicode"
 )
 
 const (
-	// DataFilePath = "./data.in"
-    DataFilePath = "./example-data.in"
+	DataFilePath = "./data.in"
+	// DataFilePath    = "./example-data.in"
+	DefaultSliceCap = 1e6
 )
-
-
 
 func main() {
 	defer writer.Flush()
 	var (
-		f   *os.File
-		err error
-		txt string
+		f    *os.File
+		err  error
+		txt  string
 		strs []string
 	)
 
-	strs = make([]string, 0, 1e6)
-
-	// ff := func(c rune) bool {
-	// 	return !unicode.IsLetter(c) && !unicode.IsNumber(c)
-	// }
+	strs = make([]string, 0, DefaultSliceCap)
 
 	// File IO
 	f, err = os.Open(DataFilePath)
@@ -49,144 +47,185 @@ func main() {
 		return
 	}
 
-    // us-express-app-2023.morbin-123@spamgourmet.com
+	// Solutions
 
-    // Dimensions
-    // l, w := len(strs), len(strs[0])
+	// SolutionRunner(strs, Part1)
 
-	// // Part 1
-    // var maxTally *CubeTally
-    // var gameNo int
-    // var tot int
-    // var okRonud bool
-    // mct := MaxCubeTally()
-    // gameNo = 1
-	// for _, s := range strs {
-    //     arr1 := strings.Split(s, ":")
-    //     okRonud = true
-    //     for _, reveal := range strings.Split(strings.TrimSpace(arr1[1]), ";") {
-    //         rgbArr := strings.FieldsFunc(reveal, ff)
-    //         for i := 0; i < len(rgbArr)-1; i++ {
-    //             v := stringToInt(rgbArr[i])
-    //             switch rgbArr[i+1] {
-    //             case "red":
-    //                 if v > mct.r {
-    //                     okRonud = false
-    //                     break
-    //                 }
-    //             case "blue":
-    //                 if v > mct.b {
-    //                     okRonud = false
-    //                     break
-    //                 }
-    //             case "green":
-    //                 if v > mct.g {
-    //                     okRonud = false
-    //                     break
-    //                 }
-    //             default:
-    //                 if !okRonud{
-    //                     break
-    //                 }
-    //                 // continue
-    //             }
-    //         }}
-
-    //     if okRonud {
-    //         tot += gameNo
-    //     }
-    //     gameNo++
-	// }
-	// printf("%d\n", tot)
-
-
+	SolutionRunner(strs, Part2)
 
 }
 
+// Solution dispatch
+type SolutionFn func([]string)
 
-func allDirections() [][2]int {
-    return [][2]int{
-        {-1, 0},
-        {1, 0},
-        {0, -1},
-        {0, 1},
-        {-1, -1},
-        {-1, 1},
-        {1, -1},
-        {1, 1},
-    }
+func SolutionRunner(sarr []string, f SolutionFn) {
+	f(sarr)
 }
 
-func isDigit[RB rune | byte](r RB) bool {
-    return r >='0' && r <= '9'
+// Solutions
+
+func Part1(lines []string) {
+	var neighbors, symbEdges []*Edge
+	var edgeMap map[*Edge][]int
+	var start, stop, tot, num int
+	edgeMap = make(map[*Edge][]int, DefaultSliceCap)
+	symbEdges = getEdgesOnlySymbols(lines)
+	hasEdge := containsEdge(symbEdges)
+	p := regexp.MustCompile(`\d+`)
+	for r, line := range lines {
+		for _, res := range p.FindAllStringIndex(line, -1) {
+			if len(res) == 0 {
+				continue
+			}
+			// Create neighbors
+			start, stop = res[0], res[1]
+			num = stringToInt(line[start:stop])
+			neighbors = make([]*Edge, 0, DefaultSliceCap)
+			for _, i := range []int{r - 1, r, r + 1} {
+				for j := start - 1; j <= stop; j++ {
+					neighbors = append(neighbors, &Edge{i, j})
+				}
+			}
+			for _, neigh := range neighbors {
+				if hasEdge(neigh) {
+					if _, ok := edgeMap[neigh]; !ok {
+						edgeMap[neigh] = make([]int, 0, DefaultSliceCap)
+					}
+					edgeMap[neigh] = append(edgeMap[neigh], num)
+				}
+			}
+		}
+	}
+	for _, n := range edgeMap {
+		tot += sumInts(n)
+	}
+	printf("%d\n", tot)
 }
-func isNum(s string) bool {
-    for _, el := range s {
-        if el <'0' || el > '9' {
-            return false
+
+// print(sum(map(prod, filter(lambda q: len(q) == 2, char_edges.values()))))
+func Part2(lines []string) {
+	var neighbors, symbEdges []*Edge
+	var edgeMap map[Edge][]int
+	var start, stop, tot, num int
+	edgeMap = make(map[Edge][]int, DefaultSliceCap)
+	symbEdges = getEdgesOnlySymbols(lines)
+	hasEdge := containsEdge(symbEdges)
+	p := regexp.MustCompile(`\d+`)
+	for r, line := range lines {
+		for _, res := range p.FindAllStringIndex(line, -1) {
+			if len(res) == 0 {
+				continue
+			}
+			// Create neighbors
+			start, stop = res[0], res[1]
+			num = stringToInt(line[start:stop])
+			neighbors = make([]*Edge, 0, DefaultSliceCap)
+			for _, i := range []int{r - 1, r, r + 1} {
+				for j := start - 1; j <= stop; j++ {
+					neighbors = append(neighbors, &Edge{i, j})
+				}
+			}
+			for _, neigh := range neighbors {
+				if hasEdge(neigh) {
+					if _, ok := edgeMap[*neigh]; !ok {
+						edgeMap[*neigh] = make([]int, 0, DefaultSliceCap)
+					}
+					edgeMap[*neigh] = append(edgeMap[*neigh], num)
+				}
+			}
+		}
+	}
+
+	for _, n := range edgeMap {
+        // printf("%v  %v\n", k, n)
+        if len(n) == 2 {
+            tot += multInts(n)
         }
-    }
-    return true
+
+	}
+	printf("%d\n", tot)
 }
 
-func Part1(a []string, h, w int) {
-    var i, j int
-    okNums := make([]int, 0, 1e6)
-    var isOk bool
-    for _, line := range a {
-        isOk = false
-        i = 0
-        for i < h-1 {
-            j = i + 1
-            for j < w && isDigit(line[j]) {
-                if isOk {
-                    continue
-                }
-                for _, d := range allDirections() {
-                    dh, dw := i+d[0], j+d[1]
-                    if dh >= h || dh < 0 || dw >= w || dw < 0 {
-                        continue
-                    }
-                    stmp := a[dh]
-                    if !isDigit(stmp[dw]) && stmp[dw] != '.' {
-                        isOk = true
-                        break
-                    }
-                }
-                j++
-            }
-            if isOk {
-                okNums = append(okNums, stringToInt[int](line[i:j]))
-            }
-        }
-    }
-    printf("%v\n", okNums)
+// Edge and related.
+type Edge struct {
+	r, c int
 }
 
-
-type MostIntegers interface {
-    ~int | ~int32 | ~int64 | ~uint | ~uint32 | ~uint64
+// Compare edges.
+func (q *Edge) isEqualTo(other *Edge) bool {
+	return q.r == other.r && q.c == other.c
 }
 
-func stringToInt[N MostIntegers](s string) N {
-	var out N
+// Check slice of edges for existing edge.
+func containsEdge(edges []*Edge) func(*Edge) bool {
+	return func(edge *Edge) bool {
+		for _, e := range edges {
+			if edge.isEqualTo(e) {
+				return true
+			}
+		}
+		return false
+	}
+}
+
+// Return list of edges that are not numeric or a period character.
+func getEdgesOnlySymbols(sarr []string) []*Edge {
+	var Ignore = `0123456789.`
+	o := make([]*Edge, 0, 1e6)
+	for i := range sarr {
+		for j, el := range sarr[i] {
+			if !hasChar(Ignore, el) {
+				o = append(o, &Edge{i, j})
+			}
+		}
+	}
+	return o
+}
+
+func hasChar[RB rune | byte](str string, rb RB) bool {
+	return strings.ContainsRune(str, rune(rb))
+}
+
+func stringToInt(s string) int {
+	var out int
 	b := []byte(s)
 	for _, el := range b {
-		out = out*10 + N(el-'0')
+		out = out*10 + int(el-'0')
 	}
 	return out
 }
 
-func maxInt[N MostIntegers](x, y N) N {
-    if x > y { return x }
-    return y
+func maxInt(x, y int) int {
+	if x > y {
+		return x
+	}
+	return y
 }
 
+func sumInts(nums []int) int {
+    o := nums[0]
+	for _, n := range nums[1:] {
+		o += n
+	}
+	return o
+}
 
-// const DefaultReaderSize int = 3e2 + 1
+func multInts(nums []int) int {
+    o := 1
+    for _, num := range nums {
+        o *= num
+    }
+    return o
+}
+
+// IO
+const (
+	DefaultReaderSize int = 2e2
+)
+
 var (
-	// reader *bufio.Reader = bufio.NewReaderSize(os.Stdin, DefaultReaderSize)
-    reader *bufio.Reader = bufio.NewReader(os.Stdin)
+	reader *bufio.Reader = bufio.NewReaderSize(os.Stdin, DefaultReaderSize)
+	// reader *bufio.Reader = bufio.NewReader(os.Stdin)
 	writer *bufio.Writer = bufio.NewWriter(os.Stdout)
 	// scnr *bufio.Scanner = bufio.NewScanner(os.Stdin)
 )
